@@ -1,7 +1,8 @@
 #include "lfcaps.h"
 
 
-
+// little endian only
+#define FIXUP(x) (x)
 
 
 // read sys_fcap. return 0 for no capabilities,
@@ -17,7 +18,7 @@ int syscaps_read( sys_fcap_t *fc, int fd, const char* path ){
 		ret = getxattr( path, XATTR_NAME_CAPS, fc, sizeof(sys_fcap_t));
 	}
 
-	if ( ERRNO(ret) == ENODATA ){
+	if ( ERRNO(ret) == ENODATA || ret==0 ){
 		bzero( fc, sizeof( sys_fcap_t ) ); // needs to be done explicite
 		return(0);
 	}
@@ -81,7 +82,7 @@ int lfcaps_read( lfcaps_t *caps, int fd, const char* path ){
 
 	if ( ret<0 ) return ret;
 	
-	caps->version=ret;
+	//caps->version=ret;
 	caps->_permitted[0] = fc.data[0].permitted;
 	caps->_permitted[1] = fc.data[1].permitted;
 	caps->_inheritable[0] = fc.data[0].inheritable;
@@ -145,7 +146,30 @@ lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator ){
 
 
 
+
+/* standalone implementation */
+
+#include "options.h"
+
+
+#define OPTIONS \
+	v,,"verbose", \
+	h,,"help", \
+	u,,"show usage", \
+	a,,"add caps", \
+	s,,"set caps", \
+	d,,"delete caps", \
+	i,,"modify inheritable capset", \
+	p,,"modify permitted capset (default)", \
+	
+
+
+
+
 MAIN{
+	uint opts = 0;
+
+
 	printsl( *argv );
 
 	lfcaps_t fc;
@@ -154,9 +178,9 @@ MAIN{
 	
 		int ret = lfcaps_read( &fc, 0, *argv );
 
-		printvl( *argv, ": \terrno:", ret, 
-				"\n  permitted:     ", FMT(.base=2), fc.permitted, 
-				"\n  inheritable:   ", fc.inheritable );
+		printvl( *argv, ": \tret: ", ret, 
+				"\n  permitted:\t", FMT(.base=2), fc.permitted, 
+				"\n  inheritable:\t", fc.inheritable );
 
 		fc.permitted = LFCAP_CHOWN | LFCAP_SETGID;
 		fc.inheritable = lfcaps_strtocap("setuid");
@@ -173,9 +197,6 @@ MAIN{
 	}
 
 	
-
-
-
 
 	exit(0);
 }
