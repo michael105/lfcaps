@@ -8,7 +8,7 @@
 // little endian only
 #define FIXUP(x) (x)
 
-typedef lfcaps_capset_t uint64;
+typedef uint64_t lfcaps_capset_t;
 
 // 64bit user definitions
 typedef struct _lfcaps_t {
@@ -40,8 +40,21 @@ typedef struct vfs_ns_cap_data sys_fcap_t;
 int lfcaps_read( lfcaps_t *caps, int fd, const char* path );
 
 // read capabilities of fd or path
-int syscaps_read( sys_fcap_t *fc, int fd, const char* path );
+//int syscaps_read( sys_fcap_t *fc, int fd, const char* path );
 
+
+#define LFCAPS_MAX 40
+
+#define LFCAPS_MAXSTRLEN 432
+
+enum {
+	#define CN(_CAP,...) _LFCAP_##_CAP,
+	#include "cap_table.h"
+	#undef CN
+	#define CN(_CAP,...) LFCAP_##_CAP=(1UL<<_LFCAP_##_CAP),
+	#include "cap_table.h"
+	#undef CN
+};
 
 
 
