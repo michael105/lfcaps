@@ -27,13 +27,13 @@ typedef struct _lfcaps_t {
 
 typedef struct vfs_ns_cap_data sys_fcap_t;
 
-# define HASCAPS( _capset, _capabilities )
+//# define HASCAPS( _capset, _capabilities )
 
-# define SETCAPS( _capset, _capabilities )
+//# define SETCAPS( _capset, _capabilities ) _capset = 
 
-# define ADDCAPS( _capset, _capabilities )
+//# define ADDCAPS( _capset, _capabilities )
 
-# define DELCAPS( _capset, _capabilities )
+//# define DELCAPS( _capset, _capabilities )
 
 // read caps, reorder the read capabilities into th lfcaps_t struct
 // fd or path can be 0
@@ -43,9 +43,12 @@ int lfcaps_read( lfcaps_t *caps, int fd, const char* path );
 //int syscaps_read( sys_fcap_t *fc, int fd, const char* path );
 
 
-#define LFCAPS_MAX 40
+# define LFCAPS_MAX 40
 
-#define LFCAPS_MAXSTRLEN 432
+# define LFCAPS_MAXSTRLEN 432
+
+
+
 
 enum {
 	#define CN(_CAP,...) _LFCAP_##_CAP,

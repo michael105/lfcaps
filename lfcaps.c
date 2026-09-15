@@ -22,11 +22,11 @@ int syscaps_read( sys_fcap_t *fc, int fd, const char* path ){
 		return(0);
 	}
 	else if ( ret <= 0 ){
-		ewritesl("Cannot read capabilities");
+		//ewritesl("Cannot read capabilities");
 		//printf( "%d%s%d\n",ret, " e: ", errno );
 		return(-ERRNO(ret));
 	}
-	printvl(PVAR(ret));
+	//printvl(PVAR(ret));
 
 	int version;
 	int size = -1;
@@ -74,6 +74,8 @@ int lfcaps_write( lfcaps_t *fc, int fd, const char* path ){
 	return ( syscaps_write( &sfc, fd, path ) );
 }
 
+
+
 int lfcaps_read( lfcaps_t *caps, int fd, const char* path ){
 	sys_fcap_t fc;
 	int ret = syscaps_read( &fc, fd, path );
@@ -97,33 +99,52 @@ int _lfcaps_sprint( char *buf, lfcaps_capset_t capset, const char separator ){
 	char *p = buf;
 	int cappos = 0; 
 
-#define CN(_a,_b,_c) _b "\0"
+	#define CN(_a,_b,_c) _b "\0"
 	const char* capstr =
-#include "cap_table.h"
+		#include "cap_table.h"
 		;
-#undef CN
-#define CN(_a,_b,_c) sizeof(_b),
+	#undef CN
+	#define CN(_a,_b,_c) sizeof(_b),
 	const char capindex[] = {
-#include "cap_table.h"
-	0	};
-#undef CN
+		#include "cap_table.h"
+		0	};
+	#undef CN
 
-	const char *pi = capindex;
-
-	while ( capset && *pi ){
+	for ( const char *pi = capindex; capset && *pi; pi++, capset >>=1 ){
 		if ( capset&0x1 ){
 			if ( p!=buf ) *p++ = separator;
 			p = stpcpy( p, capstr + cappos );
 		}
 		cappos += *pi;
-		pi++;
-		capset >>=1;
 	}
 
 	return(p-buf);
 }
 
-int lfcaps_strtocap( lfcaps_capset_t *capset, const char* str )
+lfcaps_capset_t lfcaps_strtocap( const char* str ){
+	int r = 0;
+
+	#define CN(_a,_b,_c) _b "\0"
+	const char* capstr =
+		#include "cap_table.h"
+		;
+	#undef CN
+
+	for ( const char *p = capstr; *p; ){
+		for ( const char *ps = str; *ps==*p; ps++,p++ ){
+			if ( *p == 0 ) // match
+				return( 1UL<<r );
+		}
+		while ( *p ) p++;
+		p++;
+		r++;
+	}
+		
+	return 0; // not found
+}
+
+
+
 
 MAIN{
 	printsl( *argv );
@@ -139,7 +160,7 @@ MAIN{
 				"\n  inheritable:   ", fc.inheritable );
 
 		fc.permitted = LFCAP_CHOWN | LFCAP_SETGID;
-		fc.inheritable = LFCAP_SETUID + LFCAP_CHOWN;
+		fc.inheritable = lfcaps_strtocap("setuid");
 
 		char buf[ LFCAPS_MAXSTRLEN ];
 
@@ -148,13 +169,11 @@ MAIN{
 		lfcaps_sprint( buf, -1);
 		//printsl("pt: ", buf );
 
-
 		ret = lfcaps_write( &fc, 0, *argv );
 		printvl(PVAR(ret));
-
 	}
 
-
+		
 
 
 
