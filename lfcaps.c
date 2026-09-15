@@ -144,6 +144,39 @@ lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator ){
 }
 
 
+// fuzzy version, look for the char str within the table of capnames,
+// str doesn't need to be at the beginning of a name,
+// the first occurance is a match
+lfcaps_capset_t _lfcaps_strtocap_fz( const char* str, char separator ){
+#define lfcaps_strtocap( _str, ... ) _lfcaps_strtocap( _str, __VA_ARGS__+0 )
+	#define CN(_a,_b,_c) _b "\0"
+	const char* capstr =
+		#include "cap_table.h"
+		;
+	const uint capstrsz = sizeof(
+		#include "cap_table.h" 
+			);
+	#undef CN
+
+	int r = 0;
+	for ( const char *p = capstr; p< capstr+capstrsz; ){
+		if ( *str == *p ){
+			for ( const char *ps = str; *ps==*p; ps++,p++ ){
+				if ( *ps == 0 || *ps == separator ) // match
+					return( 1UL<<r );
+			}
+		} else {
+			p++;
+		}
+		if ( *p == 0 ){
+			r++;
+			p++;
+		}
+	}
+		
+	return 0; // not found
+}
+
 
 
 
@@ -152,17 +185,31 @@ lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator ){
 #include "options.h"
 
 
+//USAGE( "" );
+
 #define OPTIONS \
 	v,,"verbose", \
 	h,,"help", \
 	u,,"show usage", \
-	a,,"add caps", \
-	s,,"set caps", \
-	d,,"delete caps", \
+	a,addcaps,"add caps", \
+	s,setcaps,"set caps", \
+	d,delcaps,"delete caps", \
+	c,,"clear all caps", \
 	i,,"modify inheritable capset", \
 	p,,"modify permitted capset (default)", \
+	t,tcapset,"test"
 	
 
+uint lfcaps_main( uint opts, int argc, char *argv[] ){
+	
+	for ( argv++; *argv; argv++ ){
+		
+
+
+	}
+
+	return(0);
+}
 
 
 
@@ -188,7 +235,7 @@ MAIN{
 		char buf[ LFCAPS_MAXSTRLEN ];
 
 		lfcaps_sprint( buf, fc.permitted );
-		printsl("permitted: ", buf );
+		printsl("permitted: \t", buf );
 		lfcaps_sprint( buf, -1);
 		//printsl("pt: ", buf );
 
