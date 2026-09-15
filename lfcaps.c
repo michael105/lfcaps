@@ -59,7 +59,6 @@ int syscaps_write( sys_fcap_t *fc, int fd, const char* path ){
 		ret = fsetxattr( fd, XATTR_NAME_CAPS, fc, XATTR_CAPS_SZ_2, 0);
 	else
 		ret = setxattr( path, XATTR_NAME_CAPS, fc, XATTR_CAPS_SZ_2, 0);
-	
 
 	return(ret);
 }
@@ -121,18 +120,18 @@ int _lfcaps_sprint( char *buf, lfcaps_capset_t capset, const char separator ){
 	return(p-buf);
 }
 
-lfcaps_capset_t lfcaps_strtocap( const char* str ){
-	int r = 0;
-
+lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator ){
+#define lfcaps_strtocap( _str, ... ) _lfcaps_strtocap( _str, __VA_ARGS__+0 )
 	#define CN(_a,_b,_c) _b "\0"
 	const char* capstr =
 		#include "cap_table.h"
 		;
 	#undef CN
 
+	int r = 0;
 	for ( const char *p = capstr; *p; ){
 		for ( const char *ps = str; *ps==*p; ps++,p++ ){
-			if ( *p == 0 ) // match
+			if ( *p == 0 || *ps == separator ) // match
 				return( 1UL<<r );
 		}
 		while ( *p ) p++;
@@ -173,7 +172,7 @@ MAIN{
 		printvl(PVAR(ret));
 	}
 
-		
+	
 
 
 
