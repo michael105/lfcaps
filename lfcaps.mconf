@@ -1,0 +1,21 @@
+
+COMPILE printv prints ltofmt bzero
+
+
+SOURCES lfcaps.c
+
+
+BINARY lfcaps
+
+
+
+
+
+
+
+
+
+
+
+
+
