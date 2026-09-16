@@ -9,13 +9,20 @@ DEPENDENCIES options.h tools.h lfcaps.h
 
 BINARY lfcaps
 
+export MVERSION="0.1-dev."`revision.sh`
 
-define VERSION "0.1-dev."`revision.sh`
+define VERSION $MVERSION
 
 define TOOL lfcaps
 
 
-
+on_success(){
+	hash=$( cat lfcaps | skein256sum )
+	sed -Ei "s/^(skein256:\s*).*/\1$hash/" README.md
+	hash=$( cat lfcaps | sha3sum 32 )
+	sed -Ei "s/^(sha3:\s*).*/\1$hash/" README.md
+	sed -Ei "s/^(version\s*).*/\1$MVERSION/" README.md
+}
 
 
 
