@@ -34,15 +34,60 @@ CN(AUDIT_WRITE, "audit_write", "auditwr" )
 CN(AUDIT_CONTROL, "audit_control", "auditctl" )
 CN(SETFCAP, "setfcap", "fcap" )
 // 31
+#ifdef CAP_MAC_OVERRIDE
+#if CAP_MAC_OVERRIDE != 32
+#error mismatch
+#endif
 CN(MAC_OVERRIDE, "mac_override", "macovrd" )
+#endif
+#ifdef CAP_MAC_ADMIN
+#if CAP_MAC_OVERRIDE != 33
+#error mismatch
+#endif
 CN(MAC_ADMIN, "mac_admin", "macadmin" )
+#endif
+#ifdef CAP_SYSLOG
+#if CAP_SYSLOG != 34
+#error mismatch
+#endif
 CN(SYSLOG, "syslog", "log" )
+#endif
+#ifdef CAP_WAKE_ALARM
+#if CAP_WAKE_ALARM != 35
+#error mismatch
+#endif
 CN(WAKE_ALARM, "wake_alarm", "wake" )
+#endif
+#ifdef CAP_BLOCK_SUSPEND
+#if CAP_BLOCK_SUSPEND != 36
+#error mismatch
+#endif
 CN(BLOCK_SUSPEND, "block_suspend", "blksusp" )
+#endif
+#ifdef CAP_AUDIT_READ
+#if CAP_AUDIT_READ != 37
+#error mismatch
+#endif
 CN(AUDIT_READ, "audit_read", "auditr" )
+#endif
+#ifdef CAP_PERFMON
+#if CAP_PERFMON != 38
+#error mismatch
+#endif
 CN(PERFMON, "perfmon", "pmon" )
+#endif
+#ifdef CAP_BPF
+#if CAP_BPF != 39
+#error mismatch
+#endif
 CN(BPF, "bpf", "bpf" )
+#endif
+#ifdef CAP_CHECKPOINT_RESTORE
+#if CAP_CHECKPOINT_RESTORE != 40
+#error mismatch
+#endif
 CN(CHECKPOINT_RESTORE, "checkpoint_restore", "chkpoint" )
+#endif
  
 
 #if CAP_CHOWN != 0 || CAP_DAC_OVERRIDE != 1 || CAP_DAC_READ_SEARCH != 2 || CAP_FOWNER != 3 || CAP_FSETID != 4 || CAP_KILL != 5 || CAP_SETGID != 6 || CAP_SETUID != 7 || CAP_SETPCAP != 8 || CAP_LINUX_IMMUTABLE != 9 || CAP_NET_BIND_SERVICE != 10 || CAP_NET_BROADCAST != 11 || CAP_NET_ADMIN != 12 || CAP_NET_RAW != 13 || CAP_IPC_LOCK != 14 || CAP_IPC_OWNER != 15 || CAP_SYS_MODULE != 16 || CAP_SYS_RAWIO != 17 || CAP_SYS_CHROOT != 18 || CAP_SYS_PTRACE != 19 || CAP_SYS_PACCT != 20 || CAP_SYS_ADMIN != 21 || CAP_SYS_BOOT != 22 || CAP_SYS_NICE != 23 || CAP_SYS_RESOURCE != 24 || CAP_SYS_TIME != 25 || CAP_SYS_TTY_CONFIG != 26 || CAP_MKNOD != 27 || CAP_LEASE != 28 || CAP_AUDIT_WRITE != 29 || CAP_AUDIT_CONTROL != 30 || CAP_SETFCAP != 31
