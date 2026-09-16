@@ -1,14 +1,18 @@
 
-COMPILE printv prints ltofmt bzero stpcpy
+@ COMPILE printv prints ltofmt bzero stpcpy 
+	MLVALIST SHELLSORT strcmp strerror short_strerror  #verbose_errstr
 
 
 SOURCES lfcaps.c
 
+DEPENDENCIES options.h tools.h lfcaps.h 
 
 BINARY lfcaps
 
 
+define VERSION "0.1-dev."`revision.sh`
 
+define TOOL lfcaps
 
 
 

@@ -9,4 +9,7 @@ work in progress, backup copy.
 
 
 
+skein256
+bin/lfcaps: 
+
 

@@ -94,7 +94,7 @@ int lfcaps_read( lfcaps_t *caps, int fd, const char* path ){
 
 
 int _lfcaps_sprint( char *buf, lfcaps_capset_t capset, const char separator ){
-# define lfcaps_sprint( _buf, _capset, ... ) _lfcaps_sprint( _buf, _capset, VA_DEFAULT( 1,',', __VA_ARGS__ ) )
+	# define lfcaps_sprint( _buf, _capset, ... ) _lfcaps_sprint( _buf, _capset, VA_DEFAULT( 1,',', __VA_ARGS__ ) )
 
 	char *p = buf;
 	int cappos = 0; 
@@ -117,12 +117,13 @@ int _lfcaps_sprint( char *buf, lfcaps_capset_t capset, const char separator ){
 		}
 		cappos += *pi;
 	}
+	*p = 0;
 
 	return(p-buf);
 }
 
 lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator ){
-#define lfcaps_strtocap( _str, ... ) _lfcaps_strtocap( _str, __VA_ARGS__+0 )
+	# define lfcaps_strtocap( _str, ... ) _lfcaps_strtocap( _str, __VA_ARGS__+0 )
 	#define CN(_a,_b,_c) _b "\0"
 	const char* capstr =
 		#include "cap_table.h"
@@ -148,7 +149,7 @@ lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator ){
 // str doesn't need to be at the beginning of a name,
 // the first occurance is a match
 lfcaps_capset_t _lfcaps_strtocap_fz( const char* str, char separator ){
-#define lfcaps_strtocap( _str, ... ) _lfcaps_strtocap( _str, __VA_ARGS__+0 )
+# define lfcaps_strtocap_fz( _str, ... ) _lfcaps_strtocap_fz( _str, __VA_ARGS__+0 )
 	#define CN(_a,_b,_c) _b "\0"
 	const char* capstr =
 		#include "cap_table.h"
@@ -159,18 +160,18 @@ lfcaps_capset_t _lfcaps_strtocap_fz( const char* str, char separator ){
 	#undef CN
 
 	int r = 0;
+	const char *op = capstr;
 	for ( const char *p = capstr; p< capstr+capstrsz; ){
-		if ( *str == *p ){
-			for ( const char *ps = str; *ps==*p; ps++,p++ ){
-				if ( *ps == 0 || *ps == separator ) // match
+			for ( const char *ps = str; *p && *ps++ == *p++; ){
+				if ( *ps == 0 || *ps == separator ){ // match
+					//printvl( "match: ", PVAR(r,op) );
 					return( 1UL<<r );
-			}
-		} else {
-			p++;
-		}
+				}
+			} 
 		if ( *p == 0 ){
 			r++;
 			p++;
+			op = p;
 		}
 	}
 		
@@ -183,32 +184,133 @@ lfcaps_capset_t _lfcaps_strtocap_fz( const char* str, char separator ){
 /* standalone implementation */
 
 #include "options.h"
+#include "tools.h"
 
 
-//USAGE( "" );
 
 #define OPTIONS \
 	v,,"verbose", \
 	h,,"help", \
 	u,,"show usage", \
-	a,addcaps,"add caps", \
-	s,setcaps,"set caps", \
-	d,delcaps,"delete caps", \
+	l,,"list caps (default)", \
+	L,,"list caps, if present", \
+	a,,"add caps", \
+	s,,"set caps", \
+	d,,"delete caps", \
 	c,,"clear all caps", \
 	i,,"modify inheritable capset", \
 	p,,"modify permitted capset (default)", \
-	t,tcapset,"test"
+	t,,"test for capabilities", \
+	n,capnames,"capset, caps separated by ','", \
+	N,,"list cap names"
+
+//x,capset,"capset as hex/octal"
 	
+
+USAGE( "[file] [file2] .." );
+
+HELP( "" );
+
+DECLARE_SETTING;
 
 uint lfcaps_main( uint opts, int argc, char *argv[] ){
+	char buf[512];
+	int ret = 0;
 	
+	lfcaps_capset_t caps = 0;
+	if ( !OPT(p|i) ) SETOPT(p);
+
+	if ( OPT(n) ){
+		for ( char *cps = GET(capnames); *cps; ){
+			//printsl( "cps: ", cps );
+			caps |= lfcaps_strtocap_fz( cps, ',' );
+			do {
+				cps ++;
+			} while ( *cps && *cps != ',' );
+			if ( !*cps ) break;
+			cps++;
+		}
+		//lfcaps_sprint( buf, caps );
+		//printvl( "capabilities: ", buf );
+	} else if ( OPT(t) )
+		caps = -1;
+
 	for ( argv++; *argv; argv++ ){
-		
+		lfcaps_t ctcaps = { 0 };
+		if ( OPT(l|a|d|L|t) ){
+			int r = lfcaps_read( &ctcaps, 0, *argv );
+			if ( r<0 ){
+				printvl( *argv, ": ", strerror( -r ) );
+				ret = -r;
+				continue;
+			}
+			if ( OPT(L) ){
+				if ( r ){
+					prints( *argv, ": " );
+					if ( ctcaps.permitted ){
+						lfcaps_sprint( buf, ctcaps.permitted );
+						prints( " permitted=", buf );
+					} 
+					if ( ctcaps.inheritable ){
+						lfcaps_sprint( buf, ctcaps.inheritable );
+						prints( " inheritable=", buf );
+					}
+					printsl();
+				}
+				continue;
+			}
+			if ( OPT(t) ){
+				if ( OPT(p) ){
+					ret |= !(caps & ctcaps.permitted);
+				}
+				if ( OPT(i) ){
+					ret |= !(caps & ctcaps.inheritable);
+				}
+				continue;
+			}
 
 
+			if ( OPT(d) ){
+				if ( OPT(i) ) ctcaps.inheritable &= ~caps;
+				if ( OPT(p) ) ctcaps.permitted &= ~caps;
+			}
+			if ( OPT(a) ){ 
+				if ( OPT(i) ) ctcaps.inheritable |= caps;
+				if ( OPT(p) ) ctcaps.permitted |= caps;
+			}
+		}
+
+		if ( OPT(s) ){
+			if ( OPT(i) ) ctcaps.inheritable = caps;
+			if ( OPT(p) ) ctcaps.permitted = caps;
+		}
+
+		// also OPT(c)
+		int r = lfcaps_write( &ctcaps,0,*argv );
+		if ( r<0 ){
+			printvl( *argv, ": ", strerror( -r ) );
+			ret = -r;
+			continue;
+		}
+
+		if ( OPT(l) ){
+			printsl( *argv );
+			if ( ctcaps.permitted | ctcaps.inheritable ){
+				if ( ctcaps.permitted ){
+					lfcaps_sprint( buf, ctcaps.permitted );
+					printsl( "permitted: ", buf );
+				} 
+				if ( ctcaps.inheritable ){
+					lfcaps_sprint( buf, ctcaps.inheritable );
+					printsl( "inheritable: ", buf );
+				}
+			} else {
+				printsl( "No capabilities" );
+			}
+		}
 	}
 
-	return(0);
+	return(ret);
 }
 
 
@@ -216,36 +318,26 @@ uint lfcaps_main( uint opts, int argc, char *argv[] ){
 MAIN{
 	uint opts = 0;
 
+	PARSEARGV( 'h': help(), 'u': usage() );
 
-	printsl( *argv );
-
-	lfcaps_t fc;
-
-	for ( argv++; *argv; argv++ ){
-	
-		int ret = lfcaps_read( &fc, 0, *argv );
-
-		printvl( *argv, ": \tret: ", ret, 
-				"\n  permitted:\t", FMT(.base=2), fc.permitted, 
-				"\n  inheritable:\t", fc.inheritable );
-
-		fc.permitted = LFCAP_CHOWN | LFCAP_SETGID;
-		fc.inheritable = lfcaps_strtocap("setuid");
-
-		char buf[ LFCAPS_MAXSTRLEN ];
-
-		lfcaps_sprint( buf, fc.permitted );
-		printsl("permitted: \t", buf );
-		lfcaps_sprint( buf, -1);
-		//printsl("pt: ", buf );
-
-		ret = lfcaps_write( &fc, 0, *argv );
-		printvl(PVAR(ret));
+	if ( OPT(N) ){
+		#define CN(_a,_b,_c) _b,
+		const char* captbl[] = {
+			#include "cap_table.h"
+			};
+		#undef CN
+		SHELLSORT( captbl, LFCAPS_MAX, ( strcmp(*a,*b) < 0 ) );
+		for ( int a = 0; a < LFCAPS_MAX; a++ )
+			printsl( captbl[a] );
+		exit(0);
 	}
 
-	
+	if ( argc<2 )
+		usage();
 
-	exit(0);
+	int ret = lfcaps_main( opts, argc, argv );
+
+	exit(ret);
 }
 
 
