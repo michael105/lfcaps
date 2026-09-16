@@ -4,10 +4,30 @@ version 0.1-dev.j8d1
 
 Linux file capabilities (cap_chroot,cap_setuid,..) C library and tools
 
-
-
-
 work in progress, backup copy.
+
+
+```
+lfcaps 0.1-dev.j8d1
+
+Usage: lfcaps [-vhulLasdciptN] [-n capnames]  [file] [file2] ..
+
+ -v                verbose
+ -h                help
+ -u                show usage
+ -l                list caps (default)
+ -L                list caps, if present
+ -a                add caps
+ -s                set caps
+ -d                delete caps
+ -c                clear all caps
+ -i                modify inheritable capset
+ -p                modify permitted capset (default)
+ -t                test for capabilities
+ -n capnames       capset, caps separated by ','
+ -N                list cap names
+```
+
 
 
 
