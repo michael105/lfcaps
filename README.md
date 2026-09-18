@@ -9,9 +9,7 @@ this readme is mostly written by ai, everything else with vi (manually).
 about 5 lines are copied from the fcaps linux library,
 which is a little bit awkward to use, imho.
 Was the main reason to rewrite the capability get/set functions et al.
-
-
-
+```
 
 Checksums of bin/lfcaps (5.3kB, static, linux 64bit)
 ```
