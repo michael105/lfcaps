@@ -6,6 +6,13 @@ The project is intended for Linux programs and shell workflows that need to insp
 
 `readme written by ai, everything else with vi (manually).`
 
+Checksums of bin/lfcaps (5.3kB, static, linux 64bit)
+```
+sha3:     c85bb2426723e323b3d2997553e36d1c704297ec94dc74c1c33cb1fe05249d5a
+skein256: fa01ebf7bb3356f30b7da0b4d98a90f45ceb9800a1eba4e4c002e7baad9ad93d
+```
+
+
 ## Features
 
 - Read file capabilities by path or from an open file descriptor.
