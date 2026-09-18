@@ -4,6 +4,8 @@
 
 The project is intended for Linux programs and shell workflows that need to inspect or manage file capabilities without dealing directly with the kernel capability xattr layout.
 
+<b>This readme is written by ai, everything else manually.</b>
+
 ## Features
 
 - Read file capabilities by path or from an open file descriptor.
@@ -49,7 +51,7 @@ lfcaps -L /path/to/program
 lfcaps -s -n cap_net_bind_service /path/to/program
 
 # Add a capability to the inheritable set
-lfcaps -a -i -n cap_net_raw /path/to/program
+lfcaps -a -i -n cap_net_raw,cap_chroot /path/to/program
 
 # Test whether a file contains a capability
 lfcaps -t -n cap_net_bind_service /path/to/program
@@ -206,23 +208,15 @@ The standalone tool also provides a fuzzy name parser for its `-n` option, allow
 
 ## Building
 
-The repository contains the project-specific `lfcaps.mconf` build description. It builds the standalone `lfcaps` binary from `lfcaps.c` and the public and generated-style headers:
-
-```text
-SOURCES lfcaps.c
-DEPENDENCIES options.h tools.h lfcaps.h cap_table.h
-BINARY lfcaps
-```
-
-Use the build tooling that provides `mconf` in your environment. The project targets Linux and requires Linux capability and extended-attribute headers, including `linux/capability.h` and `sys/xattr.h`.
+cut the sources at the 'standalone' mark to use the layer functions.
 
 ## Files
 
 - `lfcaps.h` - public C types, constants, and function declarations.
 - `lfcaps.c` - library implementation and standalone command-line tool.
 - `cap_table.h` - central capability name and number table.
-- `options.h` and `tools.h` - command-line and project support macros.
-- `lfcaps.mconf` - build configuration.
+
+
 
 ## License
 
