@@ -221,9 +221,8 @@ USAGE( "[file] [file2] .." );
 
 HELP( "" );
 
-DECLARE_SETTING;
 
-uint lfcaps_main( uint opts, int argc, char *argv[] ){
+uint lfcaps_main( setting_t *setting, uint opts, int argc, char *argv[] ){
 	char buf[LFCAPS_MAXSTRLEN];
 	int ret = 0;
 	
@@ -339,6 +338,7 @@ uint lfcaps_main( uint opts, int argc, char *argv[] ){
 
 MAIN{
 	uint opts = 0;
+	DECLARE_SETTING;
 
 	PARSEARGV( 'h': help(), 'u': usage() );
 
@@ -357,7 +357,7 @@ MAIN{
 	if ( argc<2 )
 		usage();
 
-	int ret = lfcaps_main( opts, argc, argv );
+	int ret = lfcaps_main( setting, opts, argc, argv );
 
 	exit(ret);
 }

@@ -4,7 +4,11 @@
 
 #printv ltofmt 
 
-SEGMENTS text bss
+#STRIPFLAG
+
+SEGMENTS text
+GLOBALS onstack
+SHRINKELF
 
 SOURCES lfcaps.c
 
