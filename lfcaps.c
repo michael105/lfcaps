@@ -1,12 +1,15 @@
-#include "lfcaps.h"
-
 #ifndef MLIB
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/xattr.h>
+#include <linux/xattr.h>
 #endif
+
+
+#include "lfcaps.h"
 
 // little endian only
 #define FIXUP(x) (x)
@@ -29,7 +32,7 @@ int lfcaps_sysread( sys_fcap_t *fc, int fd, const char* path ){
 		bzero( fc, sizeof( sys_fcap_t ) ); // needs to be done explicite
 		return(0);
 	}
-	else if ( ret <= 0 ){
+	else if ( ret < 0 ){
 		//ewritesl("Cannot read capabilities");
 		//printf( "%d%s%d\n",ret, " e: ", errno );
 		return(-ERRNO(ret));
@@ -266,8 +269,8 @@ uint lfcaps_main( setting_t *setting, uint opts, int argc, char *argv[] ){
 		if ( OPT(l|a|d|L|t) ){
 			int r = lfcaps_read( &ctcaps, 0, *argv );
 			if ( r<0 ){
-				printsl( *argv, ": ", strerror( -r ) );
-				ret = -r;
+				ret = ERRNO(r);
+				printsl( *argv, ": ", strerror( ret ) );
 				continue;
 			}
 			if ( OPT(L) ){
@@ -324,8 +327,8 @@ uint lfcaps_main( setting_t *setting, uint opts, int argc, char *argv[] ){
 		if ( OPT( a|s|d|c ) ){
 			int r = lfcaps_write( &ctcaps,*argv );
 			if ( r<0 ){
-				printsl( *argv, ": ", strerror( -r ) );
-				ret = -r;
+				ret = ERRNO(r);
+				printsl( *argv, ": ", strerror( ret ) );
 				continue;
 			}
 		}
