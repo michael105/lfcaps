@@ -29,8 +29,9 @@ Usage: lfcaps [-vhulLasdciptN] [-n capnames]  [file] [file2] ..
 
 
 
+```
 bin/lfcaps (5.3kB)
 sha3:     e6538cc1fc052bbd1cad3326bbccad254ec6bfe816efc2cdbb1dee272f7eb4e9
 skein256: 0d4171622ed2792c60820e3661696afda77094ebb4a16b633c03bef5f7fd7fd8
-
+```
 
