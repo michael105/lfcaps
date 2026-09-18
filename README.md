@@ -215,7 +215,7 @@ The standalone tool also provides a fuzzy name parser for its `-n` option, allow
 
 ## Building
 
-cut the sources at the 'standalone' mark to use the layer functions.
+include lfcaps.h, lfcaps.c and cap_table.h to use the layer functions
 
 ## Files
 
