@@ -26,10 +26,6 @@ typedef struct _lfcaps_t {
 
 typedef struct vfs_ns_cap_data sys_fcap_t;
 
-//# define HASCAPS( _capset, _capabilities )
-//# define SETCAPS( _capset, _capabilities )
-//# define ADDCAPS( _capset, _capabilities )
-//# define DELCAPS( _capset, _capabilities )
 
 // read caps, reorder the read capabilities into th lfcaps_t struct
 // fd or path can be 0
@@ -54,12 +50,12 @@ lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator /* = 0 */ );
 
 
 enum {
-	#define CN(_CAP,...) _LFCAP_##_CAP,
+	#define _LFCAP_(_CAP,...) _LFCAP_##_CAP,
 	#include "cap_table.h"
-	#undef CN
-	#define CN(_CAP,...) LFCAP_##_CAP=(1UL<<_LFCAP_##_CAP),
+	#undef _LFCAP_
+	#define _LFCAP_(_CAP,...) LFCAP_##_CAP=(1UL<<_LFCAP_##_CAP),
 	#include "cap_table.h"
-	#undef CN
+	#undef _LFCAP_
 };
 
 

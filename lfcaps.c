@@ -1,5 +1,12 @@
 #include "lfcaps.h"
 
+#ifndef MLIB
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/xattr.h>
+#endif
 
 // little endian only
 #define FIXUP(x) (x)
@@ -27,7 +34,6 @@ int lfcaps_sysread( sys_fcap_t *fc, int fd, const char* path ){
 		//printf( "%d%s%d\n",ret, " e: ", errno );
 		return(-ERRNO(ret));
 	}
-	//printvl(PVAR(ret));
 
 	int version;
 	int size = -1;
@@ -82,7 +88,6 @@ int lfcaps_read( lfcaps_t *caps, int fd, const char* path ){
 
 	if ( ret<0 ) return ret;
 	
-	//caps->version=ret;
 	caps->_permitted[0] = fc.data[0].permitted;
 	caps->_permitted[1] = fc.data[1].permitted;
 	caps->_inheritable[0] = fc.data[0].inheritable;
@@ -101,16 +106,16 @@ int _lfcaps_sprint( char *buf, lfcaps_capset_t capset, const char separator ){
 	char *p = buf;
 	int cappos = 0; 
 
-	#define CN(_a,_b,_c) _b "\0"
+	#define _LFCAP_(_a,_b,_c) _b "\0"
 	const char* capstr =
 		#include "cap_table.h"
 		;
-	#undef CN
-	#define CN(_a,_b,_c) sizeof(_b),
+	#undef _LFCAP_
+	#define _LFCAP_(_a,_b,_c) sizeof(_b),
 	const char capindex[] = {
 		#include "cap_table.h"
 		0	};
-	#undef CN
+	#undef _LFCAP_
 
 	for ( const char *pi = capindex; capset && *pi; pi++, capset >>=1 ){
 		if ( capset&0x1 ){
@@ -126,11 +131,11 @@ int _lfcaps_sprint( char *buf, lfcaps_capset_t capset, const char separator ){
 
 lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator ){
 	# define lfcaps_strtocap( _str, ... ) _lfcaps_strtocap( _str, __VA_ARGS__+0 )
-	#define CN(_a,_b,_c) _b "\0"
+	#define _LFCAP_(_a,_b,_c) _b "\0"
 	const char* capstr =
 		#include "cap_table.h"
 		;
-	#undef CN
+	#undef _LFCAP_
 
 	int r = 0;
 	for ( const char *p = capstr; *p; ){
@@ -155,14 +160,14 @@ lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator ){
 // returns 0 if not found.
 lfcaps_capset_t _lfcaps_strtocap_fz( const char* str, char separator ){
 # define lfcaps_strtocap_fz( _str, ... ) _lfcaps_strtocap_fz( _str, __VA_ARGS__+0 )
-	#define CN(_a,_b,_c) _b "\0"
+	#define _LFCAP_(_a,_b,_c) _b "\0"
 	const char* capstr =
 		#include "cap_table.h"
 		;
 	const uint capstrsz = sizeof(
 		#include "cap_table.h" 
 			);
-	#undef CN
+	#undef _LFCAP_
 
 	int r = 0;
 	const char *op = capstr;
@@ -196,6 +201,7 @@ lfcaps_capset_t _lfcaps_strtocap_fz( const char* str, char separator ){
 #define OPTIONS \
 	h,,"help", \
 	u,,"show usage", \
+	v,,"verbose", \
 	l,,"list caps (default)", \
 	L,,"list caps, if present", \
 	a,,"add caps", \
@@ -209,7 +215,6 @@ lfcaps_capset_t _lfcaps_strtocap_fz( const char* str, char separator ){
 	N,,"list cap names"
 
 //x,capset,"capset as hex/octal"
-//v,,"verbose", 
 	
 
 USAGE( "[file] [file2] .." );
@@ -224,6 +229,7 @@ uint lfcaps_main( uint opts, int argc, char *argv[] ){
 	
 	lfcaps_capset_t caps = 0;
 	if ( !OPT(p|i) ) SETOPT(p);
+	if ( !OPT(a|l|L|s|d|c|t ) ) SETOPT(l);
 
 	if ( OPT(n) ){
 		for ( char *cps = GET(capnames); *cps; ){
@@ -245,13 +251,13 @@ uint lfcaps_main( uint opts, int argc, char *argv[] ){
 		if ( OPT(l|a|d|L|t) ){
 			int r = lfcaps_read( &ctcaps, 0, *argv );
 			if ( r<0 ){
-				printvl( *argv, ": ", strerror( -r ) );
+				printsl( *argv, ": ", strerror( -r ) );
 				ret = -r;
 				continue;
 			}
 			if ( OPT(L) ){
 				if ( r ){
-					printv( *argv, ": " );
+					prints( *argv, ": " );
 					//printv( *argv, "fcaps v.", (int)ctcaps.version,": " );
 					if ( ctcaps.permitted ){
 						lfcaps_sprint( buf, ctcaps.permitted );
@@ -267,12 +273,19 @@ uint lfcaps_main( uint opts, int argc, char *argv[] ){
 				continue;
 			}
 			if ( OPT(t) ){
+				int rt = 0;
 				if ( OPT(p) ){
-					ret |= !(caps & ctcaps.permitted);
+					rt = !(caps & ctcaps.permitted);
 				}
 				if ( OPT(i) ){
-					ret |= !(caps & ctcaps.inheritable);
+					rt |= !(caps & ctcaps.inheritable);
 				}
+				if ( OPT(v) ){
+					if ( rt==0 ) printsl( *argv, ": cap is set" );
+					else printsl( *argv, ": cap not set" );
+				}
+
+				ret |= rt;
 				continue;
 			}
 
@@ -294,9 +307,9 @@ uint lfcaps_main( uint opts, int argc, char *argv[] ){
 
 		// also OPT(c)
 		if ( OPT( a|s|d|c ) ){
-			r = lfcaps_write( &ctcaps,0,*argv );
+			int r = lfcaps_write( &ctcaps,0,*argv );
 			if ( r<0 ){
-				printvl( *argv, ": ", strerror( -r ) );
+				printsl( *argv, ": ", strerror( -r ) );
 				ret = -r;
 				continue;
 			}
@@ -330,11 +343,11 @@ MAIN{
 	PARSEARGV( 'h': help(), 'u': usage() );
 
 	if ( OPT(N) ){
-		#define CN(_a,_b,_c) _b,
+		#define _LFCAP_(_a,_b,_c) _b,
 		const char* captbl[] = {
 			#include "cap_table.h"
 			};
-		#undef CN
+		#undef _LFCAP_
 		SHELLSORT( captbl, LFCAPS_COUNT, ( strcmp(*a,*b) < 0 ) );
 		for ( int a = 0; a < LFCAPS_COUNT; a++ )
 			printsl( captbl[a] );

@@ -1,7 +1,10 @@
 
-@ COMPILE printv prints ltofmt bzero stpcpy 
+@ COMPILE prints bzero stpcpy 
 	MLVALIST SHELLSORT strcmp strerror short_strerror  #verbose_errstr
 
+#printv ltofmt 
+
+SEGMENTS text bss
 
 SOURCES lfcaps.c
 
