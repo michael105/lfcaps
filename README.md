@@ -1,6 +1,6 @@
 # lfcaps
 
-version 0.1-dev.jb6i
+version 0.2-dev.jb6q
 
 Linux file capabilities (cap_chroot,cap_setuid,..) C library and tools
 
@@ -31,7 +31,7 @@ Usage: lfcaps [-vhulLasdciptN] [-n capnames]  [file] [file2] ..
 
 
 bin/lfcaps (6kB)
-sha3:     35bc6ad5b2ebf0b82952107bcc944a386806fc207b140c9035e96217c3a85dbb
-skein256: 4efd9c685d4b718675ebe04df6080cf519fd1a5651d5e67cea2ae52ee69adf19
+sha3:     d04c59f5b72ca9aa0faae4a02815e453f1ada628c65bedc1553f808793a4cfac
+skein256: 592723a1bde5d89969f534bbf8824e994bea011458a3d2215e6afe15ed8f8a14
 
 

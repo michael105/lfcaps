@@ -12,7 +12,7 @@ DEPENDENCIES options.h tools.h lfcaps.h cap_table.h
 
 BINARY lfcaps
 
-export VERSION="0.1-dev."`revision.sh`
+export VERSION="0.2-dev."`revision.sh`
 
 define VERSION $VERSION
 
