@@ -7,8 +7,15 @@ The project is intended for Linux programs and shell workflows that need to insp
 ```
 this readme is mostly written by ai, everything else with vi (manually).
 about 5 lines are copied from the fcaps linux library,
-which is a little bit awkward to use, imho.
+which is a little bit awkward to use, the capabilities
+are split into an 'striped' 32bit array.
+(Might had been neccessary for backwards compatbility)
+
+The combination of commandline flags with the lfcaps tool 
+seems to me also a little bit more stringent.
+
 Was the main reason to rewrite the capability get/set functions et al.
+
 ```
 
 Checksums of bin/lfcaps (5.3kB, static, linux 64bit)
