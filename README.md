@@ -4,7 +4,14 @@
 
 The project is intended for Linux programs and shell workflows that need to inspect or manage file capabilities without dealing directly with the kernel capability xattr layout.
 
-`readme written by ai, everything else with vi (manually).`
+```
+this readme is mostly written by ai, everything else with vi (manually).
+about 5 lines are copied from the fcaps linux library,
+which is a little bit awkward to use, imho.
+Was the main reason to rewrite the capability get/set functions et al.
+
+
+
 
 Checksums of bin/lfcaps (5.3kB, static, linux 64bit)
 ```
@@ -86,6 +93,23 @@ typedef struct _lfcaps_t {
 ```
 
 `permitted` and `inheritable` are capability bitsets. The project defines capability constants such as `LFCAP_CHOWN`, `LFCAP_SETUID`, and `LFCAP_NET_BIND_SERVICE`. `rootid` is used by Linux file capability version 3, and `version` contains the version detected when reading a file.
+
+The constants are bits of a 64bit bitfield,
+documentation should be in man 7 capabilities.
+
+
+```
+set capabilities:
+
+lfcaps_t fc = {0};
+fc.permitted = LFCAP_CHROOT | LFCAP_ADMIN;
+
+delete:
+fc.permitted &= ~LFCAP_ADMIN;
+
+..
+```
+
 
 ### `lfcaps_read`
 
