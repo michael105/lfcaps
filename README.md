@@ -2,18 +2,18 @@
 
 version 0.2-dev.jb75
 
-Linux file capabilities (cap_chroot,cap_setuid,..) C library and tools
+Linux file capabilities (cap_chroot,cap_setuid,..) C user layer and tools
 
 
 
 ```
-lfcaps 0.1-dev.j8d1
+lfcaps 0.2-dev.jb75
 
 Usage: lfcaps [-vhulLasdciptN] [-n capnames]  [file] [file2] ..
 
- -v                verbose
  -h                help
  -u                show usage
+ -v                verbose
  -l                list caps (default)
  -L                list caps, if present
  -a                add caps
