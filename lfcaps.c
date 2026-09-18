@@ -209,7 +209,7 @@ lfcaps_capset_t _lfcaps_strtocap_fz( const char* str, char separator ){
 
 
 
-
+#ifdef STANDALONE
 /* standalone implementation */
 
 #include "options.h"
@@ -380,7 +380,7 @@ MAIN{
 
 	exit(ret);
 }
-
+#endif
 
 
 

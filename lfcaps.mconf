@@ -17,11 +17,10 @@ DEPENDENCIES options.h tools.h lfcaps.h cap_table.h
 BINARY lfcaps
 
 export VERSION="0.2-dev."`revision.sh`
-
 define VERSION $VERSION
 
 define TOOL lfcaps
-
+define STANDALONE
 
 on_success(){
 	hash=$( cat lfcaps | skein256sum )
