@@ -2,8 +2,10 @@
 #define lfcaps_h
 
 #ifndef MLIB
-#include "kerneldefs.h"
+//#include "kerneldefs.h"
+#include <linux/capability.h>
 #endif
+
 
 typedef uint64_t lfcaps_capset_t;
 
@@ -18,7 +20,7 @@ typedef struct _lfcaps_t {
 		uint32_t _inheritable[2];
 	};
 	uint32_t rootid; // namespace id (version 3)
-	//char version;
+	char version;
 } lfcaps_t;
 
 
@@ -33,10 +35,22 @@ typedef struct vfs_ns_cap_data sys_fcap_t;
 // fd or path can be 0
 int lfcaps_read( lfcaps_t *caps, int fd, const char* path );
 
+int lfcaps_write( lfcaps_t *fc, int fd, const char* path );
 
-# define LFCAPS_MAX 40
+int lfcaps_sysread( sys_fcap_t *fc, int fd, const char* path );
 
-# define LFCAPS_MAXSTRLEN 432
+int lfcaps_syswrite( sys_fcap_t *fc, int fd, const char* path );
+
+//MAKRO: int lfcaps_sprint( buf, capset, separator=',' )
+int _lfcaps_sprint( char *buf, lfcaps_capset_t capset, const char separator /* =',' */ );
+
+//MAKRO: lfcaps_capset_t lfcaps_strtocap( const char* str, char* separator = 0 );
+lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator /* = 0 */ );
+
+
+# define LFCAPS_COUNT CAP_COUNT
+
+# define LFCAPS_MAXSTRLEN 500
 
 
 enum {
