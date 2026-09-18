@@ -4,7 +4,7 @@
 
 The project is intended for Linux programs and shell workflows that need to inspect or manage file capabilities without dealing directly with the kernel capability xattr layout.
 
-<b>This readme is written by ai, everything else manually.</b>
+`readme written by ai, everything else with vi (manually).`
 
 ## Features
 
