@@ -29,12 +29,13 @@ typedef struct vfs_ns_cap_data sys_fcap_t;
 
 // read caps, reorder the read capabilities into th lfcaps_t struct
 // fd or path can be 0
-int lfcaps_read( lfcaps_t *caps, int fd, const char* path );
+int lfcaps_read( lfcaps_t *caps, const char* path );
+int lfcaps_readfd( lfcaps_t *caps, int fd );
 
-int lfcaps_write( lfcaps_t *fc, int fd, const char* path );
+int lfcaps_write( lfcaps_t *fc, const char* path );
+int lfcaps_writefd( lfcaps_t *fc, int fd );
 
 int lfcaps_sysread( sys_fcap_t *fc, int fd, const char* path );
-
 int lfcaps_syswrite( sys_fcap_t *fc, int fd, const char* path );
 
 //MAKRO: int lfcaps_sprint( buf, capset, separator=',' )

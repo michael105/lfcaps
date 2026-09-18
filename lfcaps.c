@@ -19,11 +19,11 @@
 int lfcaps_sysread( sys_fcap_t *fc, int fd, const char* path ){
 	int ret;
 
-	if ( fd ){
-		ret = fgetxattr(fd, XATTR_NAME_CAPS, fc, sizeof(sys_fcap_t));
-	} else {
+	if ( path )
 		ret = getxattr( path, XATTR_NAME_CAPS, fc, sizeof(sys_fcap_t));
-	}
+	else 
+		ret = fgetxattr(fd, XATTR_NAME_CAPS, fc, sizeof(sys_fcap_t));
+	
 
 	if ( ERRNO(ret) == ENODATA || ret==0 ){
 		bzero( fc, sizeof( sys_fcap_t ) ); // needs to be done explicite
@@ -62,15 +62,15 @@ int lfcaps_syswrite( sys_fcap_t *fc, int fd, const char* path ){
 	// version 2 is converted to v3 by the kernel, if rootid is set.
 	fc->magic_etc = FIXUP(VFS_CAP_REVISION_2 | VFS_CAP_FLAGS_EFFECTIVE );
 	int ret;
-	if ( fd ) 
-		ret = fsetxattr( fd, XATTR_NAME_CAPS, fc, XATTR_CAPS_SZ_2, 0);
-	else
+	if ( path ) 
 		ret = setxattr( path, XATTR_NAME_CAPS, fc, XATTR_CAPS_SZ_2, 0);
+	else
+		ret = fsetxattr( fd, XATTR_NAME_CAPS, fc, XATTR_CAPS_SZ_2, 0);
 
 	return(ret);
 }
 
-int lfcaps_write( lfcaps_t *fc, int fd, const char* path ){
+int _lfcaps_write( lfcaps_t *fc, int fd, const char* path ){
 	sys_fcap_t sfc;
 	sfc.rootid = fc->rootid;
 	sfc.data[0].permitted = fc->_permitted[0];
@@ -80,9 +80,18 @@ int lfcaps_write( lfcaps_t *fc, int fd, const char* path ){
 	return ( lfcaps_syswrite( &sfc, fd, path ) );
 }
 
+int lfcaps_write( lfcaps_t *fc, const char* path ){
+	return( _lfcaps_write( fc, 0, path ) );
+}
+
+int lfcaps_writefd( lfcaps_t *fc, int fd ){
+	return( _lfcaps_write( fc, fd, 0 ) );
+}
 
 
-int lfcaps_read( lfcaps_t *caps, int fd, const char* path ){
+
+
+int _lfcaps_read( lfcaps_t *caps, int fd, const char* path ){
 	sys_fcap_t fc;
 	int ret = lfcaps_sysread( &fc, fd, path );
 
@@ -98,6 +107,13 @@ int lfcaps_read( lfcaps_t *caps, int fd, const char* path ){
 	return ret;
 }
 
+int lfcaps_read( lfcaps_t *caps, const char* path ){
+	return( _lfcaps_read( caps, 0, path ) );
+}
+
+int lfcaps_readfd( lfcaps_t *caps, int fd ){
+	return( _lfcaps_read( caps, fd, 0 ) );
+}
 
 int _lfcaps_sprint( char *buf, lfcaps_capset_t capset, const char separator ){
 	# define __lfcaps_sprint( _buf, _capset, _separator, ... ) _lfcaps_sprint( _buf, _capset, _separator )
@@ -306,7 +322,7 @@ uint lfcaps_main( setting_t *setting, uint opts, int argc, char *argv[] ){
 
 		// also OPT(c)
 		if ( OPT( a|s|d|c ) ){
-			int r = lfcaps_write( &ctcaps,0,*argv );
+			int r = lfcaps_write( &ctcaps,*argv );
 			if ( r<0 ){
 				printsl( *argv, ": ", strerror( -r ) );
 				ret = -r;
