@@ -38,12 +38,26 @@ int lfcaps_writefd( lfcaps_t *fc, int fd );
 int lfcaps_sysread( sys_fcap_t *fc, int fd, const char* path );
 int lfcaps_syswrite( sys_fcap_t *fc, int fd, const char* path );
 
+
 //MAKRO: int lfcaps_sprint( buf, capset, separator=',' )
+# define lfcaps_sprint( _buf, _capset, ... ) \
+	__lfcaps_sprint( _buf, _capset, __VA_OPT__(__VA_ARGS__,) ',' )
+
+# define __lfcaps_sprint( _buf, _capset, _separator, ... ) \
+	_lfcaps_sprint( _buf, _capset, _separator )
+
 int _lfcaps_sprint( char *buf, lfcaps_capset_t capset, const char separator /* =',' */ );
 
+
 //MAKRO: lfcaps_capset_t lfcaps_strtocap( const char* str, char* separator = 0 );
+# define lfcaps_strtocap( _str, ... ) _lfcaps_strtocap( _str, __VA_ARGS__+0 )
 lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator /* = 0 */ );
 
+
+// lfcaps_strtocap_substr( _str, separator = 0 ) 
+# define lfcaps_strtocap_substr( _str, ... ) _lfcaps_strtocap_substr( _str, __VA_ARGS__+0 )
+lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator );
+	
 
 # define LFCAPS_COUNT CAP_COUNT
 

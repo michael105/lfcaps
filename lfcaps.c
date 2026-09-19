@@ -119,9 +119,6 @@ int lfcaps_readfd( lfcaps_t *caps, int fd ){
 }
 
 int _lfcaps_sprint( char *buf, lfcaps_capset_t capset, const char separator ){
-	# define __lfcaps_sprint( _buf, _capset, _separator, ... ) _lfcaps_sprint( _buf, _capset, _separator )
-	# define lfcaps_sprint( _buf, _capset, ... ) __lfcaps_sprint( _buf, _capset, __VA_OPT__(__VA_ARGS__,) ',' )
-
 	char *p = buf;
 	int cappos = 0; 
 
@@ -149,7 +146,6 @@ int _lfcaps_sprint( char *buf, lfcaps_capset_t capset, const char separator ){
 }
 
 lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator ){
-	# define lfcaps_strtocap( _str, ... ) _lfcaps_strtocap( _str, __VA_ARGS__+0 )
 	#define _LFCAP_(_a,_b,_c) _b "\0"
 	const char* capstr =
 		#include "cap_table.h"
@@ -159,7 +155,7 @@ lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator ){
 	int r = 0;
 	for ( const char *p = capstr; *p; ){
 		for ( const char *ps = str; *ps==*p; ps++,p++ ){
-			if ( *p == 0 || *ps == separator ) // match
+			if ( *p == 0 ) // match
 				return( 1UL<<r );
 		}
 		while ( *p ) p++;
@@ -171,14 +167,13 @@ lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator ){
 }
 
 
-// fuzzy version, look for the char str within the table of capnames,
+// substring version, look for the char str within the table of capnames,
 // the end of  can be 'separator' or 0, 
 // separator defaults to 0.
 // the first cpabality wit the capname containing str anywhere within the string 
 // is returned as match, 
 // returns 0 if not found.
-lfcaps_capset_t _lfcaps_strtocap_fz( const char* str, char separator ){
-# define lfcaps_strtocap_fz( _str, ... ) _lfcaps_strtocap_fz( _str, __VA_ARGS__+0 )
+lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator ){
 	#define _LFCAP_(_a,_b,_c) _b "\0"
 	const char* capstr =
 		#include "cap_table.h"
@@ -252,7 +247,7 @@ uint lfcaps_main( setting_t *setting, uint opts, int argc, char *argv[] ){
 	if ( OPT(n) ){
 		for ( char *cps = GET(capnames); *cps; ){
 			//printsl( "cps: ", cps );
-			caps |= lfcaps_strtocap_fz( cps, ',' );
+			caps |= lfcaps_strtocap_substr( cps, ',' );
 			do {
 				cps ++;
 			} while ( *cps && *cps != ',' );
@@ -267,7 +262,7 @@ uint lfcaps_main( setting_t *setting, uint opts, int argc, char *argv[] ){
 	for ( argv++; *argv; argv++ ){
 		lfcaps_t ctcaps = { 0 };
 		if ( OPT(l|a|d|L|t) ){
-			int r = lfcaps_read( &ctcaps, 0, *argv );
+			int r = lfcaps_read( &ctcaps, *argv );
 			if ( r<0 ){
 				ret = ERRNO(r);
 				printsl( *argv, ": ", strerror( ret ) );

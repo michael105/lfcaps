@@ -20,8 +20,8 @@ Was the main reason to rewrite the capability get/set functions et al.
 
 Checksums of bin/lfcaps (5.3kB, static, linux 64bit)
 ```
-sha3:     c85bb2426723e323b3d2997553e36d1c704297ec94dc74c1c33cb1fe05249d5a
-skein256: fa01ebf7bb3356f30b7da0b4d98a90f45ceb9800a1eba4e4c002e7baad9ad93d
+sha3:     cc0ef16d8c8833e3f93b9110e12a8ae3f236f5bbad384a2ce1d8ae5da89423d3
+skein256: 9d3b3581b6958e4a7d44ab10f0c43ab5f4ad50343b219662bcd1b4d4e0b95414
 ```
 
 
