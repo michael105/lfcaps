@@ -53,10 +53,13 @@ int _lfcaps_sprint( char *buf, lfcaps_capset_t capset, const char separator /* =
 # define lfcaps_strtocap( _str, ... ) _lfcaps_strtocap( _str, __VA_ARGS__+0 )
 lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator /* = 0 */ );
 
-
-// lfcaps_strtocap_substr( _str, separator = 0 ) 
-# define lfcaps_strtocap_substr( _str, ... ) _lfcaps_strtocap_substr( _str, __VA_ARGS__+0 )
-lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator );
+// look for the substring str within the captable names.
+// set ambivalence to 1, to allow ambivalent substrings,
+// the first occurance is returned as match.
+// lfcaps_strtocap_substr( _str, separator = 0, ambivalence = 0 ) 
+# define lfcaps_strtocap_substr( _str, ... ) __lfcaps_strtocap_substr( _str, __VA_ARGS__+0, 0 )
+# define __lfcaps_strtocap_substr( _str, _sep, _amb, ... ) _lfcaps_strtocap_substr( _str, _sep, _amb )
+lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int ambivalence );
 	
 
 # define LFCAPS_COUNT CAP_COUNT

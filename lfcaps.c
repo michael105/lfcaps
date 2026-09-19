@@ -173,7 +173,7 @@ lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator ){
 // the first cpabality wit the capname containing str anywhere within the string 
 // is returned as match, 
 // returns 0 if not found.
-lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator ){
+lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int ambivalence ){
 	#define _LFCAP_(_a,_b,_c) _b "\0"
 	const char* capstr =
 		#include "cap_table.h"
@@ -183,13 +183,19 @@ lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator ){
 			);
 	#undef _LFCAP_
 
+	lfcaps_capset_t ret = 0;
+
 	int r = 0;
 	const char *op = capstr;
 	for ( const char *p = capstr; p< capstr+capstrsz; p++ ){
 			for ( const char *ps = str, *pp = p; *ps++ == *pp++ ; ){
 				if ( *ps == 0 || *ps == separator ){ // match
 					//printvl( "match: ", PVAR(r,op) );
-					return( 1UL<<r );
+					if ( ambivalence ) 
+						return( 1UL<<r );
+					if ( ret ) // ambivalent substring
+				      return 0;
+					ret = ( 1UL<<r );
 				}
 			} 
 		if ( *p == 0 ){
@@ -199,7 +205,7 @@ lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator ){
 		}
 	}
 		
-	return 0; // not found
+	return ret; // 0, if not found
 }
 
 
@@ -236,7 +242,7 @@ USAGE( "[file] [file2] .." );
 HELP( "" );
 
 
-uint lfcaps_main( setting_t *setting, uint opts, int argc, char *argv[] ){
+int lfcaps_main( setting_t *setting, uint opts, int argc, char *argv[] ){
 	char buf[LFCAPS_MAXSTRLEN];
 	int ret = 0;
 	
@@ -247,10 +253,17 @@ uint lfcaps_main( setting_t *setting, uint opts, int argc, char *argv[] ){
 	if ( OPT(n) ){
 		for ( char *cps = GET(capnames); *cps; ){
 			//printsl( "cps: ", cps );
-			caps |= lfcaps_strtocap_substr( cps, ',' );
+			lfcaps_capset_t c = lfcaps_strtocap_substr( cps, ',' );
+			if ( !c ){
+				ret = EINVAL;
+				ewrites( "ambivalent capability / not found: " );
+			}
+			caps |= c;
 			do {
+				if ( !c ) ewrite( cps, 1 );
 				cps ++;
 			} while ( *cps && *cps != ',' );
+			if ( !c ) ewritesl("");
 			if ( !*cps ) break;
 			cps++;
 		}

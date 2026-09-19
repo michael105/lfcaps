@@ -18,10 +18,11 @@ Was the main reason to rewrite the capability get/set functions et al.
 
 ```
 
-Checksums of bin/lfcaps (5.3kB, static, linux 64bit)
+The static binary is compiled for linux 64bit.
 ```
-sha3:     cc0ef16d8c8833e3f93b9110e12a8ae3f236f5bbad384a2ce1d8ae5da89423d3
-skein256: 9d3b3581b6958e4a7d44ab10f0c43ab5f4ad50343b219662bcd1b4d4e0b95414
+bin/lfcaps 5.4kB
+sha3:     60c0063dafef17e1b4ecb4c72c05e3b012057d5a58f6dd8447f932a22c21dbf3
+skein256: 390d5923e43ddac88304770f1b597b923dc21d3ca7c92a52c6bd79feb12aab7b
 ```
 
 
@@ -259,3 +260,4 @@ include lfcaps.h, lfcaps.c and cap_table.h to use the layer functions
 BSD 2clause.
 
 See [`LICENSE`](LICENSE) for the license terms.
+
