@@ -20,7 +20,7 @@ export VERSION="0.3-beta."`revision.sh`
 define VERSION $VERSION
 
 define TOOL lfcaps
-define STANDALONE
+define LFCAPS_STANDALONE
 
 on_success(){
 	hash=$( cat lfcaps | skein256sum )

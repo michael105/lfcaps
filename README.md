@@ -21,8 +21,8 @@ Was the main reason to rewrite the capability get/set functions et al.
 The static binary is compiled for linux 64bit.
 ```
 bin/lfcaps 5.6kB
-sha3:     17627f33297f70d89715966aef58eb82e070ac515179bea5bd8a31dcdd937ac3
-skein256: 41c5d546c8a70dd6099b999e4549514eb0742c7aea2552ea206e09969ae8db27
+sha3:     dc76b51dc45eeceacac2dc3d9f64a464a27bcaf610c4baabd5dc552442def322
+skein256: ffbd4a4db2b2f8e356521461798cd4c5862139294ffb8c9eac43f7e68dc21106
 ```
 
 
@@ -246,6 +246,7 @@ The standalone tool also provides a fuzzy name parser for its `-n` option, allow
 ## Building
 
 include lfcaps.h, lfcaps.c and cap_table.h to use the layer functions
+
 
 ## Files
 

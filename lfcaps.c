@@ -155,7 +155,7 @@ lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator ){
 	int r = 0;
 	for ( const char *p = capstr; *p; ){
 		for ( const char *ps = str; *ps==*p; ps++,p++ ){
-			if ( *p == 0 ) // match
+			if ( *p == 0 && *ps==separator ) // exact match
 				return( 1UL<<r );
 		}
 		while ( *p ) p++;
@@ -210,7 +210,7 @@ lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int am
 
 
 
-#ifdef STANDALONE
+#ifdef LFCAPS_STANDALONE
 /* standalone implementation */
 
 #include "options.h"
