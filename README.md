@@ -8,7 +8,7 @@ The project is intended for Linux programs and shell workflows that need to insp
 this readme is mostly written by ai, everything else with vi (manually).
 about 5 lines are copied from the fcaps linux library,
 which is a little bit awkward to use, the capabilities
-are split into an 'striped' 32bit array.
+are spread into a 'striped' 32bit array.
 (Might had been neccessary for backwards compatbility)
 
 The combination of commandline flags with the lfcaps tool 
@@ -255,5 +255,7 @@ include lfcaps.h, lfcaps.c and cap_table.h to use the layer functions
 
 
 ## License
+
+BSD 2clause.
 
 See [`LICENSE`](LICENSE) for the license terms.

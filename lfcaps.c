@@ -23,9 +23,9 @@ int lfcaps_sysread( sys_fcap_t *fc, int fd, const char* path ){
 	int ret;
 
 	if ( path )
-		ret = getxattr( path, XATTR_NAME_CAPS, fc, sizeof(sys_fcap_t));
+		ret = getxattr( path, XATTR_NAME_CAPS, fc, sizeof(sys_fcap_t) );
 	else 
-		ret = fgetxattr(fd, XATTR_NAME_CAPS, fc, sizeof(sys_fcap_t));
+		ret = fgetxattr( fd, XATTR_NAME_CAPS, fc, sizeof(sys_fcap_t) );
 	
 
 	if ( ERRNO(ret) == ENODATA || ret==0 ){
