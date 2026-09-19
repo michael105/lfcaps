@@ -16,7 +16,7 @@ DEPENDENCIES options.h tools.h lfcaps.h cap_table.h
 
 BINARY lfcaps
 
-export VERSION="0.2-dev."`revision.sh`
+export VERSION="0.3-beta."`revision.sh`
 define VERSION $VERSION
 
 define TOOL lfcaps
@@ -29,6 +29,7 @@ on_success(){
 	sed -Ei "s/^(sha3:\s*).*/\1$hash/" README.md
 	sed -Ei "s/^(version\s*).*/\1$VERSION/" README.md
 	echo $VERSION > version.txt
+	cp lfcaps ./bin/
 }
 
 
