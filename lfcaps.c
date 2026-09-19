@@ -278,7 +278,7 @@ int lfcaps_main( setting_t *setting, uint opts, int argc, char *argv[] ){
 			int r = lfcaps_read( &ctcaps, *argv );
 			if ( r<0 ){
 				ret = ERRNO(r);
-				printsl( *argv, ": ", strerror( ret ) );
+				eprintsl( *argv, ": ", strerror( ret ) );
 				continue;
 			}
 			if ( OPT(L) ){
@@ -336,7 +336,7 @@ int lfcaps_main( setting_t *setting, uint opts, int argc, char *argv[] ){
 			int r = lfcaps_write( &ctcaps,*argv );
 			if ( r<0 ){
 				ret = ERRNO(r);
-				printsl( *argv, ": ", strerror( ret ) );
+				eprintsl( *argv, ": ", strerror( ret ) );
 				continue;
 			}
 		}
