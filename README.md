@@ -70,8 +70,10 @@ lfcaps -L /path/to/program
 # Set permitted capabilities
 lfcaps -s -n cap_net_bind_service /path/to/program
 
-# Add a capability to the inheritable set,
 # capabilities can be given as non ambigous substrings
+lfcaps -s -n net_bind,net_adm /path/to/program
+
+# Add a capability to the inheritable set,
 lfcaps -ai -n net_raw,chroot /path/to/program
 
 # Test whether a file contains a capability
