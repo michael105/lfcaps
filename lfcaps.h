@@ -66,6 +66,7 @@ int _lfcaps_sprint( char *buf, lfcaps_capset_t capset, const char separator /* =
 
 // return the value of the capability given in str.
 // the capability can end with 0 or 'separator'. 
+// returns 0, if not found
 // e.g. lfcaps_capset_t caps = lfcaps_strtocap( "sys_chroot" );
 // add sys_admin (not ptrace)
 // caps |= lfcaps_strtocap( "sys_admin,sys_ptrace", ',' );
@@ -76,6 +77,8 @@ lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator /* = 0 */ );
 // look for the substring str within the captable names.
 // set ambivalence to 1, to allow ambivalent substrings,
 // the first occurance is returned as match.
+// returns 0, if not found or ambigous (substring ist multiple within
+// the list of capnames, and ambivalence is 0 (default))
 //
 // lfcaps_capset_t caps = lfcaps_strtocap_substr( "chroot" );
 // add sys_admin (not ptrace)
@@ -90,6 +93,7 @@ lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int am
 
 # define LFCAPS_COUNT CAP_COUNT
 
+// max len of all capnames including a separator.
 # define LFCAPS_MAXSTRLEN 500
 
 // the enum of the capabilities, a 64 bit bitfield. (40 used)
