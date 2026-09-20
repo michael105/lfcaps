@@ -28,7 +28,7 @@ skein256: 562c96a5afd3f02464271b3488f6e3b01fe84d95fdf8218bbdbdee78f003f255
 
 ## Usage
 
-- combine the capsets pemrmitted and inheritable into a single 64bit bitfield
+- combine the capsets permitted and inheritable into single 64bit bitfields.
 - Read file capabilities by path or from an open file descriptor.
 - Write permitted and inheritable capability sets by path or file descriptor.
 - Support the Linux file capability formats reported as versions 1, 2, and 3.
