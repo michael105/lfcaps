@@ -26,14 +26,14 @@ skein256: 562c96a5afd3f02464271b3488f6e3b01fe84d95fdf8218bbdbdee78f003f255
 ```
 
 
-## Features
+## Usage
 
+- combine the capsets pemrmitted and inheritable into a single 64bit bitfield
 - Read file capabilities by path or from an open file descriptor.
 - Write permitted and inheritable capability sets by path or file descriptor.
 - Support the Linux file capability formats reported as versions 1, 2, and 3.
 - Convert capability bitsets to readable names such as `chown` and `net_bind_service`.
 - Convert capability names back to a capability bitset.
-- Provide a standalone `lfcaps` command-line tool.
 
 ## Command-line tool
 
@@ -80,7 +80,8 @@ lfcaps -ai -n net_raw,chroot /path/to/program
 lfcaps -tn net_bind /path/to/program
 ```
 
-Changing file capabilities requires appropriate privileges, such as `CAP_SETFCAP` or root.
+Changing file capabilities requires appropriate privileges, 
+`CAP_SETFCAP` or root.
 
 
 ## C API
@@ -244,8 +245,6 @@ lfcaps_capset_t capset = 0;
 capset |= lfcaps_strtocap("chown");
 capset |= lfcaps_strtocap("net_raw");
 ```
-
-The standalone tool also provides a fuzzy name parser for its `-n` option, allowing capability names to be matched within comma-separated input.
 
 ## Building
 
