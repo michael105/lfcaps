@@ -38,8 +38,8 @@ typedef struct vfs_ns_cap_data sys_fcap_t;
 int lfcaps_read( lfcaps_t *caps, const char* path );
 int lfcaps_readfd( lfcaps_t *caps, int fd );
 
-// returns negative value for errors,
-// else >=0
+// returns a negative value for errors,
+// else 0
 int lfcaps_write( lfcaps_t *fc, const char* path );
 int lfcaps_writefd( lfcaps_t *fc, int fd );
 
