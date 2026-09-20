@@ -16,8 +16,9 @@ DEPENDENCIES options.h tools.h lfcaps.h cap_table.h
 
 BINARY lfcaps
 
-export VERSION="0.3-beta."`revision.sh`
+export VERSION="0.3.1-beta."`revision.sh`
 define VERSION $VERSION
+define LICENSE "BSD 2clause"
 
 define TOOL lfcaps
 define LFCAPS_STANDALONE

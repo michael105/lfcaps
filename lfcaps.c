@@ -239,7 +239,17 @@ lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int am
 
 USAGE( "[file] [file2] .." );
 
-HELP( "" );
+HELP( "read and modify file capablity sets.\n", 
+R"(
+capset is given with -n "capnames".
+Several caps separated with ','
+caps can be named by substrings only.
+e.g. "chroot" instead of sys_chroot.
+The substring needs to be non ambigous.
+
+Both inheritable and permitted capset can be modified/tested at once,
+by the flags '-p -i'
+)" );
 
 
 int lfcaps_main( setting_t *setting, uint opts, int argc, char *argv[] ){
