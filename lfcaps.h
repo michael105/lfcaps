@@ -27,6 +27,8 @@ typedef struct _lfcaps_t {
 } lfcaps_t;
 
 
+// version 3 struct (including namespace rootid)
+// is backwards compatible to version 2
 typedef struct vfs_ns_cap_data sys_fcap_t;
 
 
@@ -92,7 +94,7 @@ lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int am
 
 // the enum of the capabilities, a 64 bit bitfield. (40 used)
 // LFCAP_CHOWN, LFCAP_DAC_OVERRIDE,..
-// The list of capabilities is in 'man 7 capabilities'.
+// list of capabilities is in 'man 7 capabilities'.
 enum {
 	#define _LFCAP_(_CAP,...) _LFCAP_##_CAP,
 	#include "cap_table.h"
