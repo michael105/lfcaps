@@ -6,17 +6,17 @@
 #include <linux/capability.h>
 #endif
 
-
+// bitfield of capabilities
 typedef uint64_t lfcaps_capset_t;
 
 // 64bit user definitions
 typedef struct _lfcaps_t {
 	union {
-		uint64_t permitted;
+		lfcaps_capset_t permitted;
 		uint32_t _permitted[2];
 	};
 	union {
-		uint64_t inheritable;
+		lfcaps_capset_t inheritable;
 		uint32_t _inheritable[2];
 	};
 	uint32_t rootid; // namespace id
