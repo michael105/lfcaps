@@ -70,14 +70,16 @@ lfcaps -L /path/to/program
 # Set permitted capabilities
 lfcaps -s -n cap_net_bind_service /path/to/program
 
-# Add a capability to the inheritable set
-lfcaps -a -i -n cap_net_raw,cap_chroot /path/to/program
+# Add a capability to the inheritable set,
+# capabilities can be given as non ambigous substrings
+lfcaps -ai -n net_raw,chroot /path/to/program
 
 # Test whether a file contains a capability
-lfcaps -t -n cap_net_bind_service /path/to/program
+lfcaps -tn net_bind /path/to/program
 ```
 
-Changing file capabilities normally requires appropriate privileges, such as `CAP_SETFCAP`, and is subject to the Linux filesystem and user-namespace rules.
+Changing file capabilities requires appropriate privileges, such as `CAP_SETFCAP` or root.
+
 
 ## C API
 
