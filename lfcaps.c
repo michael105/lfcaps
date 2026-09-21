@@ -74,14 +74,19 @@ int lfcaps_sysread( sys_fcap_t *fc, int fd, const char* path ){
 
 // write capabilities to fd
 int lfcaps_syswrite( sys_fcap_t *fc, int fd, const char* path ){
-	// version 2 is converted to v3 by the kernel, if rootid is set,
-	// according to the kernel docs
-	fc->magic_etc = FIXUP(VFS_CAP_REVISION_2 | VFS_CAP_FLAGS_EFFECTIVE );
+	int sz;
+	if ( !fc->rootid ){
+		fc->magic_etc = FIXUP(VFS_CAP_REVISION_2 | VFS_CAP_FLAGS_EFFECTIVE );
+		sz = XATTR_CAPS_SZ_2;
+	} else { // or fail with cap rev 2
+		fc->magic_etc = FIXUP(VFS_CAP_REVISION_3 | VFS_CAP_FLAGS_EFFECTIVE );
+		sz = XATTR_CAPS_SZ_3;
+	}
 	int ret;
 	if ( path ) 
-		ret = setxattr( path, XATTR_NAME_CAPS, fc, XATTR_CAPS_SZ_2, 0);
+		ret = setxattr( path, XATTR_NAME_CAPS, fc, sz, 0);
 	else
-		ret = fsetxattr( fd, XATTR_NAME_CAPS, fc, XATTR_CAPS_SZ_2, 0);
+		ret = fsetxattr( fd, XATTR_NAME_CAPS, fc, sz, 0);
 
 	return(ret);
 }
