@@ -1,6 +1,9 @@
 #ifndef lfcaps_h
 #define lfcaps_h
 
+#define LFCAPS_VERSION 0
+#define LFCAPS_REVISION 3
+
 #ifndef MLIB
 #include <linux/capability.h>
 #endif

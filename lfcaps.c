@@ -212,6 +212,13 @@ lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int am
 /* standalone implementation */
 
 #ifndef MLIB
+
+#ifndef VERSION
+#define VERSION LFCAPS_VERSION.LFCAPS_REVISION-beta
+#endif
+
+#define TOOL lfcaps
+
 #include "macros/macrolib.h"
 #include "macros/SHELLSORT.h"
 
@@ -231,7 +238,6 @@ lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int am
 #include "macros/tools.h"
 
 
-
 #define OPTIONS \
 	h,,"help", \
 	u,,"show usage", \
@@ -249,7 +255,6 @@ lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int am
 	N,,"list cap names"
 
 //x,capset,"capset as hex/octal"
-	
 
 USAGE( "[file] [file2] .." );
 
