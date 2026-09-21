@@ -264,10 +264,10 @@ the list of capnames, and ambivalence is 0 (default))
 lfcaps_capset_t caps = lfcaps_strtocap_substr( "chroot,ptrace" );
 
 // fails (admin is ambigous, there is mac_admin,net_admin,sys_admin) 
-caps |= lfcaps_strtocap( "admin,ptr", ',' ); 
+caps |= lfcaps_strtocap_substr( "admin,ptr", ',' ); 
 
 // ok, add mac_admin
-caps |= lfcaps_strtocap( "admin,ptr", ',', 1 ); 
+caps |= lfcaps_strtocap_substr( "admin,ptr", ',', 1 ); 
 ```
 
 
