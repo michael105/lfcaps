@@ -11,7 +11,8 @@
 
 #include "lfcaps.h"
 
-// little endian arch only
+// little endian arch only,
+// (little endian to arch endian)
 #define FIXUP(x) (x)
 
 
