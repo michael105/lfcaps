@@ -45,12 +45,12 @@ int lfcaps_sysread( sys_fcap_t *fc, int fd, const char* path ){
 	uint rev = ( FIXUP(fc->magic_etc) >> VFS_CAP_REVISION_SHIFT ) 
 			& ( VFS_CAP_REVISION_MASK >> VFS_CAP_REVISION_SHIFT );
 
-	if (( rev == (VFS_CAP_REVISION_1>>VFS_CAP_REVISION_SHIFT)
-				&& XATTR_CAPS_SZ_1 != ret ) ||
+	if (!( ( rev == (VFS_CAP_REVISION_1>>VFS_CAP_REVISION_SHIFT)
+				&& XATTR_CAPS_SZ_1 == ret ) ||
 	 	( rev == (VFS_CAP_REVISION_2>>VFS_CAP_REVISION_SHIFT)
-				&& XATTR_CAPS_SZ_2 != ret ) ||
+				&& XATTR_CAPS_SZ_2 == ret ) ||
 		( rev == (VFS_CAP_REVISION_3>>VFS_CAP_REVISION_SHIFT)
-				&& XATTR_CAPS_SZ_3 != ret ) )
+				&& XATTR_CAPS_SZ_3 == ret ) ) )
 		return( -EINVAL );
 
 	return( rev );
