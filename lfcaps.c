@@ -9,20 +9,6 @@
 #include <sys/xattr.h>
 #include <linux/xattr.h>
 
-#include "macros/macrolib.h"
-#include "macros/SHELLSORT.h"
-
-#define ewrite(_buf,_len) write(STDERR_FILENO,_buf,_len)
-#define ewrites(_buf) ewrite(_buf,sizeof(_buf)-1)
-#define ewritesl(_buf) ewrite(_buf "\n",sizeof(_buf))
-
-#define _prints(_p) write(STDOUT_FILENO,_p,strlen(_p))
-#define _eprints(_p) write(STDOUT_FILENO,_p,strlen(_p))
-#define prints(...) FOREACH_K(_prints,__VA_ARGS__)
-#define printsl(...) FOREACH_K(_prints,__VA_OPT__(__VA_ARGS__,) "\n")
-#define eprintsl(...) FOREACH_K(_eprints,__VA_OPT__(__VA_ARGS__,) "\n")
-#define eprints(...) FOREACH_K(_eprints,__VA_ARGS__)
-
 typedef unsigned char uchar;
 #endif
 
@@ -224,6 +210,22 @@ lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int am
 
 #ifdef LFCAPS_STANDALONE
 /* standalone implementation */
+
+#ifndef MLIB
+#include "macros/macrolib.h"
+#include "macros/SHELLSORT.h"
+
+#define ewrite(_buf,_len) write(STDERR_FILENO,_buf,_len)
+#define ewrites(_buf) ewrite(_buf,sizeof(_buf)-1)
+#define ewritesl(_buf) ewrite(_buf "\n",sizeof(_buf))
+
+#define _prints(_p) write(STDOUT_FILENO,_p,strlen(_p))
+#define _eprints(_p) write(STDOUT_FILENO,_p,strlen(_p))
+#define prints(...) FOREACH_K(_prints,__VA_ARGS__)
+#define printsl(...) FOREACH_K(_prints,__VA_OPT__(__VA_ARGS__,) "\n")
+#define eprintsl(...) FOREACH_K(_eprints,__VA_OPT__(__VA_ARGS__,) "\n")
+#define eprints(...) FOREACH_K(_eprints,__VA_ARGS__)
+#endif
 
 #include "macros/options.h"
 #include "macros/tools.h"
