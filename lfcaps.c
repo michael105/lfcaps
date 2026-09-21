@@ -11,8 +11,8 @@
 
 #include "lfcaps.h"
 
-// little endian only
-#define LESWAP(x) (x)
+// little endian arch only
+#define FIXUP(x) (x)
 
 
 // read sys_fcap. return 0 for no capabilities,
@@ -37,7 +37,7 @@ int lfcaps_sysread( sys_fcap_t *fc, int fd, const char* path ){
 		return(-ERRNO(ret));
 	}
 
-	uint rev = ( LESWAP(fc->magic_etc) >> VFS_CAP_REVISION_SHIFT ) 
+	uint rev = ( FIXUP(fc->magic_etc) >> VFS_CAP_REVISION_SHIFT ) 
 			& ( VFS_CAP_REVISION_MASK >> VFS_CAP_REVISION_SHIFT );
 
 	if (( rev == (VFS_CAP_REVISION_1>>VFS_CAP_REVISION_SHIFT)
@@ -56,7 +56,7 @@ int lfcaps_sysread( sys_fcap_t *fc, int fd, const char* path ){
 int lfcaps_syswrite( sys_fcap_t *fc, int fd, const char* path ){
 	// version 2 is converted to v3 by the kernel, if rootid is set,
 	// according to the kernel docs
-	fc->magic_etc = LESWAP(VFS_CAP_REVISION_2 | VFS_CAP_FLAGS_EFFECTIVE );
+	fc->magic_etc = FIXUP(VFS_CAP_REVISION_2 | VFS_CAP_FLAGS_EFFECTIVE );
 	int ret;
 	if ( path ) 
 		ret = setxattr( path, XATTR_NAME_CAPS, fc, XATTR_CAPS_SZ_2, 0);
@@ -206,8 +206,8 @@ lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int am
 #ifdef LFCAPS_STANDALONE
 /* standalone implementation */
 
-#include "options.h"
-#include "tools.h"
+#include "macros/options.h"
+#include "macros/tools.h"
 
 
 
@@ -270,9 +270,7 @@ int lfcaps_main( setting_t *setting, uint opts, int argc, char *argv[] ){
 			if ( !*cps ) break;
 			cps++;
 		}
-		//lfcaps_sprint( buf, caps );
-		//printvl( "capabilities: ", buf );
-	} else if ( OPT(t) )
+	} else if ( OPT(t) ) // test for any cap
 		caps = -1;
 
 	for ( argv++; *argv; argv++ ){

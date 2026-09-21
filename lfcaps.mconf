@@ -12,7 +12,7 @@ SHRINKELF
 
 SOURCES lfcaps.c
 
-DEPENDENCIES options.h tools.h lfcaps.h cap_table.h
+DEPENDENCIES lfcaps.h cap_table.h
 
 BINARY lfcaps
 

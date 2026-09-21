@@ -2,8 +2,16 @@
 #define lfcaps_h
 
 #ifndef MLIB
-//#include "kerneldefs.h"
 #include <linux/capability.h>
+#endif
+
+#if VFS_CAP_REVISION != VFS_CAP_REVISION_2 \
+	 &&  VFS_CAP_REVISION != VFS_CAP_REVISION_3
+// untested. bitshifts/union could be wrong.
+#error vfs cap revision 2 or 3 needed
+#endif
+#ifndef __LITTLE_ENDIAN 
+#error little endian needed
 #endif
 
 // bitfield of capabilities
