@@ -247,6 +247,30 @@ capset |= lfcaps_strtocap("chown");
 capset |= lfcaps_strtocap("net_raw");
 ```
 
+
+```c
+lfcaps_capset_t cap = lfcaps_strtocap_substr( _str, separator = 0, ambivalence = 0 ) 
+```
+
+search for the substring str within the captable names.
+set ambivalence to 1, to allow ambivalent substrings,
+the first occurance is returned as match.
+
+returns 0, if not found or ambigous (substring is multiple within
+the list of capnames, and ambivalence is 0 (default))
+
+```c
+//add sys_admin (not ptrace)
+lfcaps_capset_t caps = lfcaps_strtocap_substr( "chroot,ptrace" );
+
+// fails (admin is ambigous, there is mac_admin,net_admin,sys_admin) 
+caps |= lfcaps_strtocap( "admin,ptr", ',' ); 
+
+// ok, add mac_admin
+caps |= lfcaps_strtocap( "admin,ptr", ',', 1 ); 
+```
+
+
 ## Building
 
 include lfcaps.h, lfcaps.c and cap_table.h to use the layer functions

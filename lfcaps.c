@@ -82,13 +82,11 @@ int lfcaps_syswrite( sys_fcap_t *fc, int fd, const char* path ){
 		fc->magic_etc = FIXUP(VFS_CAP_REVISION_3 | VFS_CAP_FLAGS_EFFECTIVE );
 		sz = XATTR_CAPS_SZ_3;
 	}
-	int ret;
-	if ( path ) 
-		ret = setxattr( path, XATTR_NAME_CAPS, fc, sz, 0);
-	else
-		ret = fsetxattr( fd, XATTR_NAME_CAPS, fc, sz, 0);
 
-	return(ret);
+	if ( path ) 
+		return( setxattr( path, XATTR_NAME_CAPS, fc, sz, 0) );
+
+	return( fsetxattr( fd, XATTR_NAME_CAPS, fc, sz, 0) );
 }
 
 int _lfcaps_write( lfcaps_t *fc, int fd, const char* path ){
