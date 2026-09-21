@@ -16,6 +16,13 @@
 #define ewrites(_buf) ewrite(_buf,sizeof(_buf)-1)
 #define ewritesl(_buf) ewrite(_buf "\n",sizeof(_buf))
 
+#define _prints(_p) write(STDOUT_FILENO,_p,strlen(_p))
+#define _eprints(_p) write(STDOUT_FILENO,_p,strlen(_p))
+#define prints(...) FOREACH_K(_prints,__VA_ARGS__)
+#define printsl(...) FOREACH_K(_prints,__VA_OPT__(__VA_ARGS__,) "\n")
+#define eprintsl(...) FOREACH_K(_eprints,__VA_OPT__(__VA_ARGS__,) "\n")
+#define eprints(...) FOREACH_K(_eprints,__VA_ARGS__)
+
 typedef unsigned char uchar;
 #endif
 
