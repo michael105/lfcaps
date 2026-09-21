@@ -2,10 +2,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
+#include <unistd.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/xattr.h>
 #include <linux/xattr.h>
+
+#include "macros/macrolib.h"
+#include "macros/SHELLSORT.h"
+
+#define ewrite(_buf,_len) write(STDERR_FILENO,_buf,_len)
+#define ewrites(_buf) ewrite(_buf,sizeof(_buf)-1)
+#define ewritesl(_buf) ewrite(_buf "\n",sizeof(_buf))
+
+typedef unsigned char uchar;
 #endif
 
 
