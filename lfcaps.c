@@ -12,7 +12,7 @@
 #include "lfcaps.h"
 
 // little endian only
-#define FIXUP(x) (x)
+#define LESWAP(x) (x)
 
 
 // read sys_fcap. return 0 for no capabilities,
@@ -27,43 +27,36 @@ int lfcaps_sysread( sys_fcap_t *fc, int fd, const char* path ){
 	else 
 		ret = fgetxattr( fd, XATTR_NAME_CAPS, fc, sizeof(sys_fcap_t) );
 	
+	bzero( fc, sizeof( sys_fcap_t ) ); // set rootid etc to 0 as well
 
-	if ( ERRNO(ret) == ENODATA || ret==0 ){
-		bzero( fc, sizeof( sys_fcap_t ) ); // needs to be done explicite
+	if ( ERRNO(ret) == ENODATA || ret==0 )
 		return(0);
-	}
+
 	else if ( ret < 0 ){
 		//ewritesl("Cannot read capabilities");
-		//printf( "%d%s%d\n",ret, " e: ", errno );
 		return(-ERRNO(ret));
 	}
 
-	int version;
-	int size = -1;
-	switch (FIXUP(fc->magic_etc) & VFS_CAP_REVISION_MASK) {
-		case VFS_CAP_REVISION_1:
-			size = XATTR_CAPS_SZ_1;
-			version = 1;
-			break;
-		case VFS_CAP_REVISION_2:
-			size = XATTR_CAPS_SZ_2;
-			version = 2;
-			break;
-		case VFS_CAP_REVISION_3:
-			size = XATTR_CAPS_SZ_3;
-			version = 3;
-	}
-	if ( size != ret )
-		return ( -EINVAL );
-	
-	return( version );
+	uint rev = ( LESWAP(fc->magic_etc) >> VFS_CAP_REVISION_SHIFT ) 
+			& ( VFS_CAP_REVISION_MASK >> VFS_CAP_REVISION_SHIFT );
+
+	if (( rev == (VFS_CAP_REVISION_1>>VFS_CAP_REVISION_SHIFT)
+				&& XATTR_CAPS_SZ_1 != ret ) ||
+	 	( rev == (VFS_CAP_REVISION_2>>VFS_CAP_REVISION_SHIFT)
+				&& XATTR_CAPS_SZ_2 != ret ) ||
+		( rev == (VFS_CAP_REVISION_3>>VFS_CAP_REVISION_SHIFT)
+				&& XATTR_CAPS_SZ_3 != ret ) )
+		return( -EINVAL );
+
+	return( rev );
 }
 
 
 // write capabilities to fd
 int lfcaps_syswrite( sys_fcap_t *fc, int fd, const char* path ){
-	// version 2 is converted to v3 by the kernel, if rootid is set.
-	fc->magic_etc = FIXUP(VFS_CAP_REVISION_2 | VFS_CAP_FLAGS_EFFECTIVE );
+	// version 2 is converted to v3 by the kernel, if rootid is set,
+	// according to the kernel docs
+	fc->magic_etc = LESWAP(VFS_CAP_REVISION_2 | VFS_CAP_FLAGS_EFFECTIVE );
 	int ret;
 	if ( path ) 
 		ret = setxattr( path, XATTR_NAME_CAPS, fc, XATTR_CAPS_SZ_2, 0);

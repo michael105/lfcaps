@@ -6,10 +6,11 @@ The project is intended for Linux programs and shell workflows that need to insp
 
 ```
 this readme is mostly written by ai, everything else with vi (manually).
-about 5 lines are copied from the fcaps linux library,
-which is a little bit awkward to use, the capabilities
-are spread into a 'striped' 32bit array.
-(Might had been neccessary for backwards compatbility)
+This aims to have a more user friendly handling of
+the capability bitsets than the kernel/linux fcap library.
+The capabilities of the fcaps lib/kernel definitions 
+are spread into a 'striped' 32bit array,
+what might had been neccessary for backwards compatbility.
 
 The combination of commandline flags with the lfcaps tool 
 seems to me also a little bit more stringent.
