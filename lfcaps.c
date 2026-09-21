@@ -213,11 +213,8 @@ lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int am
 
 #ifndef MLIB
 
-#ifndef VERSION
-#define VERSION LFCAPS_VERSION.LFCAPS_REVISION-beta
-#endif
-
 #define TOOL lfcaps
+#define VERSION LFCAPS_VERSION.LFCAPS_REVISION-beta
 
 #include "macros/macrolib.h"
 #include "macros/SHELLSORT.h"
