@@ -1,8 +1,7 @@
 
 @ COMPILE prints bzero stpcpy 
 	MLVALIST SHELLSORT strcmp strerror short_strerror  #verbose_errstr
-
-#printv ltofmt 
+printv ltofmt 
 
 #STRIPFLAG
 

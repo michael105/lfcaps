@@ -42,12 +42,12 @@ typedef unsigned char uchar;
 int lfcaps_sysread( sys_fcap_t *fc, int fd, const char* path ){
 	int ret;
 
+	bzero( fc, sizeof( sys_fcap_t ) ); // set rootid etc to 0 as well
+												
 	if ( path )
 		ret = getxattr( path, XATTR_NAME_CAPS, fc, sizeof(sys_fcap_t) );
 	else 
 		ret = fgetxattr( fd, XATTR_NAME_CAPS, fc, sizeof(sys_fcap_t) );
-	
-	bzero( fc, sizeof( sys_fcap_t ) ); // set rootid etc to 0 as well
 
 	if ( ERRNO(ret) == ENODATA || ret==0 )
 		return(0);
@@ -68,7 +68,7 @@ int lfcaps_sysread( sys_fcap_t *fc, int fd, const char* path ){
 	else if	( rev == (VFS_CAP_REVISION_3>>VFS_CAP_REVISION_SHIFT) )
 		sz =  XATTR_CAPS_SZ_3;
 
-	if ( sz != rev ) // also different revision
+	if ( sz != ret ) // also different revision
 		return( sz );
 
 	return( rev );
