@@ -89,6 +89,11 @@ Changing file capabilities requires appropriate privileges,
 
 Include the public header, and add lfcapslib.c as sourcefile.
 
+Several functions are defined as macros with default values,
+indicated here with cpp syntax default values
+The according functions with a leading `_` are public as well.
+I'm looking for another semantic yet.
+
 ```c
 #include "lfcapslib.h"
 ```
