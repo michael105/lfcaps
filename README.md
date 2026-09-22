@@ -22,8 +22,8 @@ Was the main reason to rewrite the capability get/set functions et al.
 The static binary is compiled for linux 64bit.
 ```
 bin/lfcaps 6kB
-sha3:     99efeffdb9d168270f44da18ba16095b5b6e6084f792c620a869aa4e579450ae
-skein256: ad47126f7ce4a5bc6189d2b246c7be61843491a14299d2c09f14e86681a6ca62
+sha3:     ae081d0483bd55dc44c0bea1aeb3f70f4d80bd235feb4b7d5f533292522a2489
+skein256: f9e90f3ec785eb01b9bb3ac4857d7dfb1786a44d47db547e8efedb2a0ad72000
 ```
 
 
