@@ -129,10 +129,8 @@ lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator /* = 0 */ );
 # define lfcaps_strtocapset_substr( _str, ... ) \
 		_lfcaps_strtocapset_substr( _str, DEFAULT_ARGS( 3, ',',0,0 ),__VA_ARGS__)
 
-	lfcaps_capset_t _lfcaps_strtocapset_substr( const char* str, char separator, int ambivalence, int verbose );
+lfcaps_capset_t _lfcaps_strtocapset_substr( const char* str, char separator, int ambivalence, int verbose );
 
-	#define __lfcaps_strtocapset_substr( _str, _sep, _amb, _verbose, ... ) \
-		_lfcaps_strtocapset_substr( _str, _sep, _amb, _verbose )
 	
 
 # define LFCAPS_COUNT CAP_COUNT
