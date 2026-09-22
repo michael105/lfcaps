@@ -191,7 +191,7 @@ lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator ){
 // the first cpabality wit the capname containing str anywhere within the string 
 // is returned as match, 
 // returns 0 if not found.
-lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int ambivalence ){
+lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int ambivalence, int verbose ){
 	#define _LFCAP_(_a,_b,_c) _b "\0"
 	const char* capstr =
 		#include "lfcapslib.h"
@@ -202,24 +202,27 @@ lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int am
 	#undef _LFCAP_
 
 	lfcaps_capset_t ret = 0;
-
 	int r = 0;
-	const char *op = capstr;
+	const char *match, *pos = capstr;
+
 	for ( const char *p = capstr; p< capstr+capstrsz; p++ ){
 			for ( const char *ps = str, *pp = p; *ps++ == *pp++ ; ){
 				if ( *ps == 0 || *ps == separator ){ // match
-					//printvl( "match: ", PVAR(r,op) );
 					if ( ambivalence ) 
 						return( 1UL<<r );
-					if ( ret ) // ambivalent substring
-				      return 0;
+					if ( ret ){ // ambivalent substring
+						if ( verbose ){
+							eprintsl( "Ambivalent substring: ", match, " == ", pos );
+						}
+						return 0;
+					}
 					ret = ( 1UL<<r );
+					match = pos;
 				}
 			} 
 		if ( *p == 0 ){
+			pos = p+1;
 			r++;
-			//p++;
-			op = p;
 		}
 	}
 		

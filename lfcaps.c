@@ -80,7 +80,7 @@ int lfcaps_main( setting_t *setting, uint opts, int argc, char *argv[] ){
 	if ( OPT(n) ){
 		for ( char *cps = GET(capnames); *cps; ){
 			//printsl( "cps: ", cps );
-			lfcaps_capset_t c = lfcaps_strtocap_substr( cps, ',' );
+			lfcaps_capset_t c = lfcaps_strtocap_substr( cps, ',',0,1 );
 			if ( !c ){
 				ret = EINVAL;
 				ewrites( "ambivalent capability / not found: " );

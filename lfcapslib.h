@@ -16,7 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ‘AS IS˜ AND 
 #define lfcaps_h
 
 #define LFCAPS_VERSION 0
-#define LFCAPS_REVISION 4
+#define LFCAPS_REVISION 5
 
 #ifndef MLIB
 #include <linux/capability.h>
@@ -110,10 +110,11 @@ lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator /* = 0 */ );
 // caps |= lfcaps_strtocap( "admin,ptr", ',' ); fails (admin is ambigous)
 // caps |= lfcaps_strtocap( "admin,ptr", ',', 1 ); ok, add admin to the capset
 //
-// lfcaps_strtocap_substr( _str, separator = 0, ambivalence = 0 ) 
-# define lfcaps_strtocap_substr( _str, ... ) __lfcaps_strtocap_substr( _str, __VA_ARGS__+0, 0 )
-# define __lfcaps_strtocap_substr( _str, _sep, _amb, ... ) _lfcaps_strtocap_substr( _str, _sep, _amb )
-lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int ambivalence );
+// lfcaps_strtocap_substr( _str, separator = 0, ambivalence = 0, verbose = 0 ) 
+# define lfcaps_strtocap_substr( _str, ... ) __lfcaps_strtocap_substr( _str, __VA_ARGS__+0, 0, 0 )
+
+#define __lfcaps_strtocap_substr( _str, _sep, _amb, _verbose, ... ) _lfcaps_strtocap_substr( _str, _sep, _amb, _verbose )
+lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int ambivalence, int verbose );
 	
 
 # define LFCAPS_COUNT CAP_COUNT

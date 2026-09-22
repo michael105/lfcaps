@@ -1,7 +1,8 @@
 
 @ COMPILE prints bzero stpcpy 
 	MLVALIST SHELLSORT strcmp strerror short_strerror  #verbose_errstr
-printv ltofmt 
+
+#printv ltofmt 
 
 #STRIPFLAG
 
@@ -11,11 +12,11 @@ SHRINKELF
 
 SOURCES lfcapslib.c lfcaps.c
 
-DEPENDENCIES lfcaps.h cap_table.h
+DEPENDENCIES lfcapslib.h
 
 BINARY lfcaps
 
-export VERSION="0.4-beta."`revision.sh`
+export VERSION="0.5-beta."`revision.sh`
 define VERSION $VERSION
 define LICENSE "BSD 2clause"
 
