@@ -190,7 +190,7 @@ lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator ){
 // separator defaults to 0.
 // the first cpabality wit the capname containing str anywhere within the string 
 // is returned as match, 
-// returns 0 if not found.
+// returns 0 if not found, LFCAP_ERROR for ambigous substrings
 lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int ambivalence, int verbose ){
 	#define _LFCAP_(_a,_b,_c) _b "\0"
 	const char* capstr =
@@ -214,7 +214,7 @@ lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int am
 						if ( verbose ){
 							eprintsl( "Ambivalent substring: ", match, " == ", pos );
 						}
-						return 0;
+						return LFCAP_ERROR;
 					}
 					ret = ( 1UL<<r );
 					match = pos;
@@ -231,4 +231,29 @@ lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int am
 
 
 
+lfcaps_capset_t _lfcaps_strtocapset_substr( const char* str, char separator, int ambivalence, int verbose ){
+
+	lfcaps_capset_t caps = 0;
+
+	for ( const char *cps = str; *cps; ){
+		lfcaps_capset_t c = lfcaps_strtocap_substr( cps, ',',0,1 );
+		if ( c==0 && verbose ) ewrites( "capability not found: " );
+		caps |= c;
+		const char* pos = cps;
+		do {
+			cps ++;
+		} while ( *cps && *cps != separator );
+		if ( c <= 0 ){ 
+			if ( verbose ) {
+				ewrite( pos, cps-pos );
+				ewritesl();
+			}
+			return LFCAP_ERROR;
+		}
+		if ( !*cps ) break;
+		cps++;
+	}
+
+	return caps;
+}
 

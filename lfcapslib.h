@@ -32,7 +32,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ‘AS IS˜ AND 
 #endif
 
 // bitfield of capabilities
-typedef uint64_t lfcaps_capset_t;
+typedef int64_t lfcaps_capset_t;
 
 // 64bit user definitions
 typedef struct _lfcaps_t {
@@ -91,7 +91,7 @@ int lfcaps_syswrite( sys_fcap_t *fc, int fd, const char* path );
 
 // return the value of the capability given in str.
 // the capability can end with 0 or 'separator'. 
-// returns 0, if not found
+// returns LFCAP_ERROR (negtive, <0), if not found
 // e.g. lfcaps_capset_t caps = lfcaps_strtocap( "sys_chroot" );
 // add sys_admin (not ptrace)
 // caps |= lfcaps_strtocap( "sys_admin,sys_ptrace", ',' );
@@ -103,8 +103,9 @@ lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator /* = 0 */ );
 // look for the substring str within the captable names.
 // set ambivalence to 1, to allow ambivalent substrings,
 // the first occurance is returned as match.
-// returns 0, if not found or ambigous (substring ist multiple within
-// the list of capnames, and ambivalence is 0 (default))
+// returns LFCAP_ERROR (<0), if not found or ambigous 
+// 	(substring ist multiple within the list of capnames, 
+// 	and ambivalence is 0 (default))
 //
 // lfcaps_capset_t caps = lfcaps_strtocap_substr( "chroot" );
 // add sys_admin (not ptrace)
@@ -117,9 +118,21 @@ lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator /* = 0 */ );
 
 	lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int ambivalence, int verbose );
 
-
 	#define __lfcaps_strtocap_substr( _str, _sep, _amb, _verbose, ... ) \
 		_lfcaps_strtocap_substr( _str, _sep, _amb, _verbose )
+	
+
+// convert a string with capnames and separators into a capset,
+// substring matching, ambigous matches fail with ret=LFCAP_ERROR.
+// LFCAP_ERROR is a negative value
+// e.g "fcap,sys_admin"
+# define lfcaps_strtocapset_substr( _str, ... ) \
+		__lfcaps_strtocapset_substr( _str, __VA_ARGS__+0, 0, 0 )
+
+	lfcaps_capset_t _lfcaps_strtocapset_substr( const char* str, char separator, int ambivalence, int verbose );
+
+	#define __lfcaps_strtocapset_substr( _str, _sep, _amb, _verbose, ... ) \
+		_lfcaps_strtocapset_substr( _str, _sep, _amb, _verbose )
 	
 
 # define LFCAPS_COUNT CAP_COUNT
@@ -137,6 +150,8 @@ enum {
 	#define _LFCAP_(_CAP,...) LFCAP_##_CAP=(1UL<<_LFCAP_##_CAP),
 	#include "lfcapslib.h"
 	#undef _LFCAP_
+	LFCAP_ALLCAPS=((unsigned)(-1L)>>(unsigned)((sizeof(lfcaps_capset_t)*8 - LFCAPS_COUNT)) ), // all cap bits set, positive
+	LFCAP_ERROR=(1L<<((sizeof(lfcaps_capset_t)*8)-1)) // negative value
 };
 
 

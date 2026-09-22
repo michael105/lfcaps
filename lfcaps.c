@@ -78,22 +78,10 @@ int lfcaps_main( setting_t *setting, uint opts, int argc, char *argv[] ){
 	if ( !OPT(a|l|L|s|d|c|t ) ) SETOPT(l);
 
 	if ( OPT(n) ){
-		for ( char *cps = GET(capnames); *cps; ){
-			//printsl( "cps: ", cps );
-			lfcaps_capset_t c = lfcaps_strtocap_substr( cps, ',',0,1 );
-			if ( !c ){
-				ret = EINVAL;
-				ewrites( "ambivalent capability / not found: " );
+		caps = _lfcaps_strtocapset_substr( GET(capnames), ',',0,1 );
+			if ( caps & LFCAP_ERROR ){
+				exit(EINVAL);
 			}
-			caps |= c;
-			do {
-				if ( !c ) ewrite( cps, 1 );
-				cps ++;
-			} while ( *cps && *cps != ',' );
-			if ( !c ) ewritesl("");
-			if ( !*cps ) break;
-			cps++;
-		}
 	} else if ( OPT(t) ) // test for any cap
 		caps = -1;
 
