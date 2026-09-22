@@ -83,10 +83,10 @@ int lfcaps_syswrite( sys_fcap_t *fc, int fd, const char* path );
 # define lfcaps_sprint( _buf, _capset, ... ) \
 	__lfcaps_sprint( _buf, _capset, __VA_OPT__(__VA_ARGS__,) ',' )
 
-# define __lfcaps_sprint( _buf, _capset, _separator, ... ) \
+	# define __lfcaps_sprint( _buf, _capset, _separator, ... ) \
 	_lfcaps_sprint( _buf, _capset, _separator )
 
-int _lfcaps_sprint( char *buf, lfcaps_capset_t capset, const char separator /* =',' */ );
+	int _lfcaps_sprint( char *buf, lfcaps_capset_t capset, const char separator /* =',' */ );
 
 
 // return the value of the capability given in str.
@@ -96,8 +96,9 @@ int _lfcaps_sprint( char *buf, lfcaps_capset_t capset, const char separator /* =
 // add sys_admin (not ptrace)
 // caps |= lfcaps_strtocap( "sys_admin,sys_ptrace", ',' );
 //MAKRO: lfcaps_capset_t lfcaps_strtocap( const char* str, char* separator = 0 );
-# define lfcaps_strtocap( _str, ... ) _lfcaps_strtocap( _str, __VA_ARGS__+0 )
 lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator /* = 0 */ );
+	
+	# define lfcaps_strtocap( _str, ... ) _lfcaps_strtocap( _str, __VA_ARGS__+0 )
 
 // look for the substring str within the captable names.
 // set ambivalence to 1, to allow ambivalent substrings,
@@ -111,10 +112,14 @@ lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator /* = 0 */ );
 // caps |= lfcaps_strtocap( "admin,ptr", ',', 1 ); ok, add admin to the capset
 //
 // lfcaps_strtocap_substr( _str, separator = 0, ambivalence = 0, verbose = 0 ) 
-# define lfcaps_strtocap_substr( _str, ... ) __lfcaps_strtocap_substr( _str, __VA_ARGS__+0, 0, 0 )
+# define lfcaps_strtocap_substr( _str, ... ) \
+		__lfcaps_strtocap_substr( _str, __VA_ARGS__+0, 0, 0 )
 
-#define __lfcaps_strtocap_substr( _str, _sep, _amb, _verbose, ... ) _lfcaps_strtocap_substr( _str, _sep, _amb, _verbose )
-lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int ambivalence, int verbose );
+	lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int ambivalence, int verbose );
+
+
+	#define __lfcaps_strtocap_substr( _str, _sep, _amb, _verbose, ... ) \
+		_lfcaps_strtocap_substr( _str, _sep, _amb, _verbose )
 	
 
 # define LFCAPS_COUNT CAP_COUNT
