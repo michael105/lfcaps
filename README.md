@@ -87,10 +87,10 @@ Changing file capabilities requires appropriate privileges,
 
 ## C API
 
-Include the public header:
+Include the public header, and add lfcapslib.c as sourcefile.
 
 ```c
-#include "lfcaps.h"
+#include "lfcapslib.h"
 ```
 
 The public API uses the following data type:
@@ -289,9 +289,9 @@ include lfcaps.h, lfcaps.c and cap_table.h to use the layer functions
 
 ## Files
 
-- `lfcaps.h` - public C types, constants, and function declarations.
-- `lfcaps.c` - library implementation and standalone command-line tool.
-- `cap_table.h` - central capability name and number table.
+- `lfcapslib.h` - public C types, constants, and function declarations.
+- `lfcapslib.c` - library implementation and standalone command-line tool.
+- `lfcaps.c`    - standalone tool
 
 
 
