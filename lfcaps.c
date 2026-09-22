@@ -1,3 +1,5 @@
+/* standalone implementation */
+
 /* BSD 2clause
 
 copyright 2026 misc147 codeberg.org/misc1
@@ -12,238 +14,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ‘AS IS˜ AND 
 
 */
 
-
 #ifndef MLIB
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
-#include <unistd.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/xattr.h>
-#include <linux/xattr.h>
-
-typedef unsigned char uchar;
-#endif
-
-
-#include "lfcaps.h"
-
-// little endian arch only,
-// (little endian to arch endian)
-#define FIXUP(x) (x)
-
-
-// read sys_fcap. return 0 for no capabilities,
-// 1, 2 or 3 for success and the read file capability version
-// else -ernno (<0), -EINVAL if the read attribute's size doesn't 
-// match the attribute size of the capability version
-int lfcaps_sysread( sys_fcap_t *fc, int fd, const char* path ){
-	int ret;
-
-	bzero( fc, sizeof( sys_fcap_t ) ); // set rootid etc to 0 as well
-												
-	if ( path )
-		ret = getxattr( path, XATTR_NAME_CAPS, fc, sizeof(sys_fcap_t) );
-	else 
-		ret = fgetxattr( fd, XATTR_NAME_CAPS, fc, sizeof(sys_fcap_t) );
-
-	if ( ERRNO(ret) == ENODATA || ret==0 )
-		return(0);
-
-	else if ( ret < 0 ){
-		//ewritesl("Cannot read capabilities");
-		return(-ERRNO(ret));
-	}
-
-	uint rev = ( FIXUP(fc->magic_etc) >> VFS_CAP_REVISION_SHIFT ) 
-			& ( VFS_CAP_REVISION_MASK >> VFS_CAP_REVISION_SHIFT );
-
-	int sz = -EINVAL;
-	if ( rev == (VFS_CAP_REVISION_1>>VFS_CAP_REVISION_SHIFT) )
-		sz = XATTR_CAPS_SZ_1;
-	else if	( rev == (VFS_CAP_REVISION_2>>VFS_CAP_REVISION_SHIFT) )
-		sz = XATTR_CAPS_SZ_2;
-	else if	( rev == (VFS_CAP_REVISION_3>>VFS_CAP_REVISION_SHIFT) )
-		sz =  XATTR_CAPS_SZ_3;
-
-	if ( sz != ret ) // also different revision
-		return( sz );
-
-	return( rev );
-}
-
-
-// write capabilities to fd
-int lfcaps_syswrite( sys_fcap_t *fc, int fd, const char* path ){
-	int sz;
-	if ( !fc->rootid ){
-		fc->magic_etc = FIXUP(VFS_CAP_REVISION_2 | VFS_CAP_FLAGS_EFFECTIVE );
-		sz = XATTR_CAPS_SZ_2;
-	} else { // or fail with cap rev 2
-		fc->magic_etc = FIXUP(VFS_CAP_REVISION_3 | VFS_CAP_FLAGS_EFFECTIVE );
-		sz = XATTR_CAPS_SZ_3;
-	}
-
-	if ( path ) 
-		return( setxattr( path, XATTR_NAME_CAPS, fc, sz, 0) );
-
-	return( fsetxattr( fd, XATTR_NAME_CAPS, fc, sz, 0) );
-}
-
-int _lfcaps_write( lfcaps_t *fc, int fd, const char* path ){
-	sys_fcap_t sfc;
-	sfc.rootid = fc->rootid;
-	sfc.data[0].permitted = fc->_permitted[0];
-	sfc.data[1].permitted = fc->_permitted[1];
-	sfc.data[0].inheritable = fc->_inheritable[0];
-	sfc.data[1].inheritable = fc->_inheritable[1];
-	return ( lfcaps_syswrite( &sfc, fd, path ) );
-}
-
-int lfcaps_write( lfcaps_t *fc, const char* path ){
-	return( _lfcaps_write( fc, 0, path ) );
-}
-
-int lfcaps_writefd( lfcaps_t *fc, int fd ){
-	return( _lfcaps_write( fc, fd, 0 ) );
-}
-
-
-
-
-int _lfcaps_read( lfcaps_t *caps, int fd, const char* path ){
-	sys_fcap_t fc;
-	int ret = lfcaps_sysread( &fc, fd, path );
-
-	if ( ret<0 ) return ret;
-	
-	caps->_permitted[0] = fc.data[0].permitted;
-	caps->_permitted[1] = fc.data[1].permitted;
-	caps->_inheritable[0] = fc.data[0].inheritable;
-	caps->_inheritable[1] = fc.data[1].inheritable;
-	caps->rootid = fc.rootid;
-	caps->version = ret;
-
-	return ret;
-}
-
-int lfcaps_read( lfcaps_t *caps, const char* path ){
-	return( _lfcaps_read( caps, 0, path ) );
-}
-
-int lfcaps_readfd( lfcaps_t *caps, int fd ){
-	return( _lfcaps_read( caps, fd, 0 ) );
-}
-
-int _lfcaps_sprint( char *buf, lfcaps_capset_t capset, const char separator ){
-	char *p = buf;
-	int cappos = 0; 
-
-	#define _LFCAP_(_a,_b,_c) _b "\0"
-	const char* capstr =
-		#include "cap_table.h"
-		;
-	#undef _LFCAP_
-	#define _LFCAP_(_a,_b,_c) sizeof(_b),
-	const char capindex[] = {
-		#include "cap_table.h"
-		0	};
-	#undef _LFCAP_
-
-	for ( const char *pi = capindex; capset && *pi; pi++, capset >>=1 ){
-		if ( capset&0x1 ){
-			if ( p!=buf ) *p++ = separator;
-			p = stpcpy( p, capstr + cappos );
-		}
-		cappos += *pi;
-	}
-	*p = 0;
-
-	return(p-buf);
-}
-
-lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator ){
-	#define _LFCAP_(_a,_b,_c) _b "\0"
-	const char* capstr =
-		#include "cap_table.h"
-		;
-	#undef _LFCAP_
-
-	int r = 0;
-	for ( const char *p = capstr; *p; ){
-		for ( const char *ps = str; *ps==*p; ps++,p++ ){
-			if ( *p == 0 && ( ( ! *ps ) || *ps==separator ) ) // exact match
-				return( 1UL<<r );
-		}
-		while ( *p ) p++;
-		p++;
-		r++;
-	}
-		
-	return 0; // not found
-}
-
-
-// substring version, look for the char str within the table of capnames,
-// the end of  can be 'separator' or 0, 
-// separator defaults to 0.
-// the first cpabality wit the capname containing str anywhere within the string 
-// is returned as match, 
-// returns 0 if not found.
-lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int ambivalence ){
-	#define _LFCAP_(_a,_b,_c) _b "\0"
-	const char* capstr =
-		#include "cap_table.h"
-		;
-	const uint capstrsz = sizeof(
-		#include "cap_table.h" 
-			);
-	#undef _LFCAP_
-
-	lfcaps_capset_t ret = 0;
-
-	int r = 0;
-	const char *op = capstr;
-	for ( const char *p = capstr; p< capstr+capstrsz; p++ ){
-			for ( const char *ps = str, *pp = p; *ps++ == *pp++ ; ){
-				if ( *ps == 0 || *ps == separator ){ // match
-					//printvl( "match: ", PVAR(r,op) );
-					if ( ambivalence ) 
-						return( 1UL<<r );
-					if ( ret ) // ambivalent substring
-				      return 0;
-					ret = ( 1UL<<r );
-				}
-			} 
-		if ( *p == 0 ){
-			r++;
-			//p++;
-			op = p;
-		}
-	}
-		
-	return ret; // 0, if not found
-}
-
-
-
-#ifdef LFCAPS_STANDALONE
-/* standalone implementation */
-
-#ifndef MLIB
-
 #define TOOL lfcaps
 #define VERSION LFCAPS_VERSION.LFCAPS_REVISION-beta
-
 #include "macros/macrolib.h"
 #include "macros/SHELLSORT.h"
-
 #define ewrite(_buf,_len) write(STDERR_FILENO,_buf,_len)
 #define ewrites(_buf) ewrite(_buf,sizeof(_buf)-1)
 #define ewritesl(_buf) ewrite(_buf "\n",sizeof(_buf))
-
 #define _prints(_p) write(STDOUT_FILENO,_p,strlen(_p))
 #define _eprints(_p) write(STDOUT_FILENO,_p,strlen(_p))
 #define prints(...) FOREACH_K(_prints,__VA_ARGS__)
@@ -251,6 +29,8 @@ lfcaps_capset_t _lfcaps_strtocap_substr( const char* str, char separator, int am
 #define eprintsl(...) FOREACH_K(_eprints,__VA_OPT__(__VA_ARGS__,) "\n")
 #define eprints(...) FOREACH_K(_eprints,__VA_ARGS__)
 #endif
+
+#include "lfcapslib.h"
 
 #include "macros/options.h"
 #include "macros/tools.h"
@@ -417,7 +197,7 @@ MAIN{
 	if ( OPT(N) ){
 		#define _LFCAP_(_a,_b,_c) _b,
 		const char* captbl[] = {
-			#include "cap_table.h"
+			#include "lfcapslib.h"
 			};
 		#undef _LFCAP_
 		SHELLSORT( captbl, LFCAPS_COUNT, ( strcmp(*a,*b) < 0 ) );
@@ -433,7 +213,6 @@ MAIN{
 
 	exit(ret);
 }
-#endif
 
 
 

@@ -9,7 +9,7 @@ SEGMENTS text
 GLOBALS onstack
 SHRINKELF
 
-SOURCES lfcaps.c
+SOURCES lfcapslib.c lfcaps.c
 
 DEPENDENCIES lfcaps.h cap_table.h
 
