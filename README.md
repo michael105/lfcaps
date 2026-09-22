@@ -22,8 +22,8 @@ Was the main reason to rewrite the capability get/set functions et al.
 The static binary is compiled for linux 64bit.
 ```
 bin/lfcaps 6kB
-sha3:     9a739b351bc851e4afcd3d4c13e5611f161e62224b475dba11b1deb47832d256
-skein256: 6acc0c5f5f04e3665a9eddd7f367c7e54933db477feb7d3055c1172fe2e5314b
+sha3:     408bde573b1980beac2318b5241ff106342735daabd62a64b8a457e5f369dc8b
+skein256: 1f2c9fb72627cf11ce05ff10baa1afc2ef70e56717e03429dadb0be003602f9b
 ```
 
 
@@ -269,6 +269,17 @@ caps |= lfcaps_strtocap_substr( "admin,ptr", ',' );
 // ok, add mac_admin
 caps |= lfcaps_strtocap_substr( "admin,ptr", ',', 1 ); 
 ```
+
+
+```c
+lfcaps_capset_t lfcaps_strtocapset_substr( const char* str, char separator = ',', int ambivalence = 0, int verbose = 0 );
+```
+
+convert a string with capnames and separators into a capset,
+substring matching, ambigous matches fail with ret=LFCAP_ERROR.
+LFCAP_ERROR is a negative value
+e.g "fcap,sys_admin"
+
 
 
 ## Building

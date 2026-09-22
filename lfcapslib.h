@@ -127,7 +127,7 @@ lfcaps_capset_t _lfcaps_strtocap( const char* str, char separator /* = 0 */ );
 // LFCAP_ERROR is a negative value
 // e.g "fcap,sys_admin"
 # define lfcaps_strtocapset_substr( _str, ... ) \
-		__lfcaps_strtocapset_substr( _str, __VA_ARGS__+0, 0, 0 )
+		_lfcaps_strtocapset_substr( _str, DEFAULT_ARGS( 3, ',',0,0 ),__VA_ARGS__)
 
 	lfcaps_capset_t _lfcaps_strtocapset_substr( const char* str, char separator, int ambivalence, int verbose );
 
