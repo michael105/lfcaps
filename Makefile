@@ -1,4 +1,4 @@
 
-lfcaps: lfcaps.h lfcaps.c cap_table.h
-	gcc -Os -o lfcaps lfcaps.c -DLFCAPS_STANDALONE
+lfcaps: lfcapslib.h lfcapslib.c lfcaps.c
+	gcc -Os -o lfcaps lfcaps.c lfcapslib.c -DLFCAPS_STANDALONE
 

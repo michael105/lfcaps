@@ -24,6 +24,21 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ‘AS IS˜ AND 
 #include <linux/xattr.h>
 
 typedef unsigned char uchar;
+
+#define TOOL lfcaps
+#define VERSION LFCAPS_VERSION.LFCAPS_REVISION-beta
+#include "macros/macrolib.h"
+#include "macros/SHELLSORT.h"
+#define ewrite(_buf,_len) write(STDERR_FILENO,_buf,_len)
+#define ewrites(_buf) ewrite(_buf,sizeof(_buf)-1)
+#define ewritesl(_buf) ewrite(_buf "\n",sizeof(_buf))
+#define _prints(_p) write(STDOUT_FILENO,_p,strlen(_p))
+#define _eprints(_p) write(STDOUT_FILENO,_p,strlen(_p))
+#define prints(...) FOREACH_K(_prints,__VA_ARGS__)
+#define printsl(...) FOREACH_K(_prints,__VA_OPT__(__VA_ARGS__,) "\n")
+#define eprintsl(...) FOREACH_K(_eprints,__VA_OPT__(__VA_ARGS__,) "\n")
+#define eprints(...) FOREACH_K(_eprints,__VA_ARGS__)
+
 #endif
 
 #include "lfcapslib.h"
@@ -246,7 +261,7 @@ lfcaps_capset_t _lfcaps_strtocapset_substr( const char* str, char separator, int
 		if ( c <= 0 ){ 
 			if ( verbose ) {
 				ewrite( pos, cps-pos );
-				ewritesl();
+				ewritesl("");
 			}
 			return LFCAP_ERROR;
 		}

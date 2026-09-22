@@ -15,6 +15,20 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ‘AS IS˜ AND 
 */
 
 #ifndef MLIB
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/xattr.h>
+#include <linux/xattr.h>
+
+typedef unsigned char uchar;
+
+
 #define TOOL lfcaps
 #define VERSION LFCAPS_VERSION.LFCAPS_REVISION-beta
 #include "macros/macrolib.h"
